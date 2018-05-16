@@ -6,6 +6,9 @@
 
     extern char *yytext;
     extern FILE *yyin;
+
+    int yyerror(char *s);
+    int yylex();
 %}
 
 %union {
@@ -45,9 +48,9 @@ code:
     | code line
     ;
 
-line: '\n'      {;}
-    | exp '\n'  {;}
-    | exp exp '\n' {;}
+line: 
+    | exp line  {;}
+    | '\n'      {;}
     ;
 
 exp : _PLUS_OP

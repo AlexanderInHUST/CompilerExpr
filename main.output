@@ -41,6 +41,10 @@ Terminals unused in grammar
    _UMINUS_OP
 
 
+State 1 conflicts: 4 shift/reduce
+State 7 conflicts: 3 shift/reduce
+
+
 Grammar
 
     0 $accept: code $end
@@ -48,9 +52,9 @@ Grammar
     1 code: %empty
     2     | code line
 
-    3 line: '\n'
-    4     | exp '\n'
-    5     | exp exp '\n'
+    3 line: %empty
+    4     | exp line
+    5     | '\n'
 
     6 exp: _PLUS_OP
     7    | _MULTIPLE_OP
@@ -59,7 +63,7 @@ Grammar
 Terminals, with rules where they appear
 
 $end (0) 0
-'\n' (10) 3 4 5
+'\n' (10) 5
 error (256)
 _INTEGER_VALUE (258)
 _VARIABLE_NAME (259)
@@ -111,9 +115,9 @@ $accept (45)
 code (46)
     on left: 1 2, on right: 0 2
 line (47)
-    on left: 3 4 5, on right: 2
+    on left: 3 4 5, on right: 2 4
 exp (48)
-    on left: 6 7, on right: 4 5
+    on left: 6 7, on right: 4
 
 
 State 0
@@ -134,6 +138,11 @@ State 1
     _PLUS_OP      shift, and go to state 3
     _MULTIPLE_OP  shift, and go to state 4
     '\n'          shift, and go to state 5
+
+    $end          [reduce using rule 3 (line)]
+    _PLUS_OP      [reduce using rule 3 (line)]
+    _MULTIPLE_OP  [reduce using rule 3 (line)]
+    '\n'          [reduce using rule 3 (line)]
 
     line  go to state 6
     exp   go to state 7
@@ -162,9 +171,9 @@ State 4
 
 State 5
 
-    3 line: '\n' .
+    5 line: '\n' .
 
-    $default  reduce using rule 3 (line)
+    $default  reduce using rule 5 (line)
 
 
 State 6
@@ -176,32 +185,23 @@ State 6
 
 State 7
 
-    4 line: exp . '\n'
-    5     | exp . exp '\n'
+    4 line: exp . line
 
     _PLUS_OP      shift, and go to state 3
     _MULTIPLE_OP  shift, and go to state 4
-    '\n'          shift, and go to state 8
+    '\n'          shift, and go to state 5
 
-    exp  go to state 9
+    _PLUS_OP      [reduce using rule 3 (line)]
+    _MULTIPLE_OP  [reduce using rule 3 (line)]
+    '\n'          [reduce using rule 3 (line)]
+    $default      reduce using rule 3 (line)
+
+    line  go to state 8
+    exp   go to state 7
 
 
 State 8
 
-    4 line: exp '\n' .
+    4 line: exp line .
 
     $default  reduce using rule 4 (line)
-
-
-State 9
-
-    5 line: exp exp . '\n'
-
-    '\n'  shift, and go to state 10
-
-
-State 10
-
-    5 line: exp exp '\n' .
-
-    $default  reduce using rule 5 (line)

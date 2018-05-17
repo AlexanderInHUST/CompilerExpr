@@ -45,8 +45,8 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    _INTEGER_VALUE = 258,
-    _VARIABLE_NAME = 259,
+    _VARIABLE_NAME = 258,
+    _INTEGER_VALUE = 259,
     _FLOAT_VALUE = 260,
     _CHAR_VALUE = 261,
     _INT_DECLARATION = 262,
@@ -81,11 +81,14 @@ extern int yydebug;
     _COMMA_DIVIDED_CHAR = 291,
     _COMMENT_LEFT = 292,
     _COMMENT_RIGHT = 293,
-    _LEFT_SELF_PLUS_UNARY_OP = 294,
-    _LEFT_SELF_MINUS_UNARY_OP = 295,
-    _RIGHT_SELF_PLUS_UNARY_OP = 296,
-    _RIGHT_SELF_MINUS_UNARY_OP = 297,
-    _UMINUS_OP = 298
+    _EOF = 294,
+    _LEFT_SELF_PLUS_UNARY_OP = 295,
+    _LEFT_SELF_MINUS_UNARY_OP = 296,
+    _RIGHT_SELF_PLUS_UNARY_OP = 297,
+    _RIGHT_SELF_MINUS_UNARY_OP = 298,
+    _UMINUS_OP = 299,
+    _EXP_LEFT_BRACKET = 300,
+    _EXP_RIGHT_BRACKET = 301
   };
 #endif
 
@@ -99,9 +102,9 @@ union YYSTYPE
     int int_value;
     char name_value[32];
     float float_value;
-    struct tree_node * _tree_node;
+    struct tree_node * tree_node;
 
-#line 105 "main.tab.h" /* yacc.c:1915  */
+#line 108 "main.tab.h" /* yacc.c:1915  */
 };
 
 typedef union YYSTYPE YYSTYPE;

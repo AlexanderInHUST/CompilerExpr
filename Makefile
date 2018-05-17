@@ -15,4 +15,4 @@ wa:
 	gcc $(CFLAG) $(LFLAG) $(LEX_C_FILE) $(BISON_C_FILE) -o $(EXE_FILE)
 
 clean:
-	rm -rf $(LEX_C_FILE) $(main.tab.c) $(EXE_FILE)
+	rm -rf $(LEX_C_FILE) $(BISON_C_FILE) $(EXE_FILE)

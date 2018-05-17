@@ -1,16 +1,5 @@
 Terminals unused in grammar
 
-   _INTEGER_VALUE
-   _VARIABLE_NAME
-   _FLOAT_VALUE
-   _CHAR_VALUE
-   _INT_DECLARATION
-   _FLOAT_RECLARATION
-   _CHAR_DECLARATION
-   _IF_CONDITION
-   _WHILE_CONDITION
-   _ASSIGN_UNARY_OP
-   _MINUS_OP
    _DIVIDE_OP
    _MODULE_OP
    _PLUS_ASSIGN_OP
@@ -26,12 +15,6 @@ Terminals unused in grammar
    _LESS_EQUAL_OP
    _NOT_EQUAL_OP
    _EQUAL_OP
-   _LEFT_BRACKET
-   _RIGHT_BRACKET
-   _LEFT_BRACE
-   _RIGHT_BRACE
-   _END_DIVIDED_CHAR
-   _COMMA_DIVIDED_CHAR
    _COMMENT_LEFT
    _COMMENT_RIGHT
    _LEFT_SELF_PLUS_UNARY_OP
@@ -39,10 +22,8 @@ Terminals unused in grammar
    _RIGHT_SELF_PLUS_UNARY_OP
    _RIGHT_SELF_MINUS_UNARY_OP
    _UMINUS_OP
-
-
-State 1 conflicts: 4 shift/reduce
-State 7 conflicts: 3 shift/reduce
+   _EXP_LEFT_BRACKET
+   _EXP_RIGHT_BRACKET
 
 
 Grammar
@@ -50,34 +31,56 @@ Grammar
     0 $accept: code $end
 
     1 code: %empty
-    2     | code line
+    2     | code block
+    3     | code _EOF
 
-    3 line: %empty
-    4     | exp line
-    5     | '\n'
+    4 block: sentence _END_DIVIDED_CHAR
+    5      | _LEFT_BRACE code _RIGHT_BRACE
+    6      | _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block
+    7      | _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block
 
-    6 exp: _PLUS_OP
-    7    | _MULTIPLE_OP
+    8 sentence: exp
+    9         | var_declaration
+
+   10 exp: _PLUS_OP
+   11    | _MINUS_OP
+   12    | _MULTIPLE_OP
+   13    | exp _COMMA_DIVIDED_CHAR exp
+   14    | _VARIABLE_NAME _ASSIGN_UNARY_OP _INTEGER_VALUE
+   15    | _VARIABLE_NAME _ASSIGN_UNARY_OP _FLOAT_VALUE
+   16    | _VARIABLE_NAME _ASSIGN_UNARY_OP _CHAR_VALUE
+
+   17 var_declaration: _INT_DECLARATION var_link_int
+   18                | _FLOAT_RECLARATION var_link_float
+   19                | _CHAR_DECLARATION var_link_char
+
+   20 var_link_int: _VARIABLE_NAME _ASSIGN_UNARY_OP _INTEGER_VALUE
+   21             | var_link_int _COMMA_DIVIDED_CHAR var_link_int
+
+   22 var_link_float: _VARIABLE_NAME _ASSIGN_UNARY_OP _FLOAT_VALUE
+   23               | var_link_float _COMMA_DIVIDED_CHAR var_link_float
+
+   24 var_link_char: _VARIABLE_NAME _ASSIGN_UNARY_OP _CHAR_VALUE
+   25              | var_link_char _COMMA_DIVIDED_CHAR var_link_char
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'\n' (10) 5
 error (256)
-_INTEGER_VALUE (258)
-_VARIABLE_NAME (259)
-_FLOAT_VALUE (260)
-_CHAR_VALUE (261)
-_INT_DECLARATION (262)
-_FLOAT_RECLARATION (263)
-_CHAR_DECLARATION (264)
-_IF_CONDITION (265)
-_WHILE_CONDITION (266)
-_ASSIGN_UNARY_OP (267)
-_PLUS_OP (268) 6
-_MINUS_OP (269)
-_MULTIPLE_OP (270) 7
+_VARIABLE_NAME (258) 14 15 16 20 22 24
+_INTEGER_VALUE (259) 14 20
+_FLOAT_VALUE (260) 15 22
+_CHAR_VALUE (261) 16 24
+_INT_DECLARATION (262) 17
+_FLOAT_RECLARATION (263) 18
+_CHAR_DECLARATION (264) 19
+_IF_CONDITION (265) 6
+_WHILE_CONDITION (266) 7
+_ASSIGN_UNARY_OP (267) 14 15 16 20 22 24
+_PLUS_OP (268) 10
+_MINUS_OP (269) 11
+_MULTIPLE_OP (270) 12
 _DIVIDE_OP (271)
 _MODULE_OP (272)
 _PLUS_ASSIGN_OP (273)
@@ -93,31 +96,44 @@ _LARGER_EQUAL_OP (282)
 _LESS_EQUAL_OP (283)
 _NOT_EQUAL_OP (284)
 _EQUAL_OP (285)
-_LEFT_BRACKET (286)
-_RIGHT_BRACKET (287)
-_LEFT_BRACE (288)
-_RIGHT_BRACE (289)
-_END_DIVIDED_CHAR (290)
-_COMMA_DIVIDED_CHAR (291)
+_LEFT_BRACKET (286) 6 7
+_RIGHT_BRACKET (287) 6 7
+_LEFT_BRACE (288) 5
+_RIGHT_BRACE (289) 5
+_END_DIVIDED_CHAR (290) 4
+_COMMA_DIVIDED_CHAR (291) 13 21 23 25
 _COMMENT_LEFT (292)
 _COMMENT_RIGHT (293)
-_LEFT_SELF_PLUS_UNARY_OP (294)
-_LEFT_SELF_MINUS_UNARY_OP (295)
-_RIGHT_SELF_PLUS_UNARY_OP (296)
-_RIGHT_SELF_MINUS_UNARY_OP (297)
-_UMINUS_OP (298)
+_EOF (294) 3
+_LEFT_SELF_PLUS_UNARY_OP (295)
+_LEFT_SELF_MINUS_UNARY_OP (296)
+_RIGHT_SELF_PLUS_UNARY_OP (297)
+_RIGHT_SELF_MINUS_UNARY_OP (298)
+_UMINUS_OP (299)
+_EXP_LEFT_BRACKET (300)
+_EXP_RIGHT_BRACKET (301)
 
 
 Nonterminals, with rules where they appear
 
-$accept (45)
+$accept (47)
     on left: 0
-code (46)
-    on left: 1 2, on right: 0 2
-line (47)
-    on left: 3 4 5, on right: 2 4
-exp (48)
-    on left: 6 7, on right: 4
+code (48)
+    on left: 1 2 3, on right: 0 2 3 5
+block (49)
+    on left: 4 5 6 7, on right: 2 6 7
+sentence (50)
+    on left: 8 9, on right: 4
+exp (51)
+    on left: 10 11 12 13 14 15 16, on right: 6 7 8 13
+var_declaration (52)
+    on left: 17 18 19, on right: 9
+var_link_int (53)
+    on left: 20 21, on right: 17 21
+var_link_float (54)
+    on left: 22 23, on right: 18 23
+var_link_char (55)
+    on left: 24 25, on right: 19 25
 
 
 State 0
@@ -132,20 +148,26 @@ State 0
 State 1
 
     0 $accept: code . $end
-    2 code: code . line
+    2 code: code . block
+    3     | code . _EOF
 
-    $end          shift, and go to state 2
-    _PLUS_OP      shift, and go to state 3
-    _MULTIPLE_OP  shift, and go to state 4
-    '\n'          shift, and go to state 5
+    $end                shift, and go to state 2
+    _VARIABLE_NAME      shift, and go to state 3
+    _INT_DECLARATION    shift, and go to state 4
+    _FLOAT_RECLARATION  shift, and go to state 5
+    _CHAR_DECLARATION   shift, and go to state 6
+    _IF_CONDITION       shift, and go to state 7
+    _WHILE_CONDITION    shift, and go to state 8
+    _PLUS_OP            shift, and go to state 9
+    _MINUS_OP           shift, and go to state 10
+    _MULTIPLE_OP        shift, and go to state 11
+    _LEFT_BRACE         shift, and go to state 12
+    _EOF                shift, and go to state 13
 
-    $end          [reduce using rule 3 (line)]
-    _PLUS_OP      [reduce using rule 3 (line)]
-    _MULTIPLE_OP  [reduce using rule 3 (line)]
-    '\n'          [reduce using rule 3 (line)]
-
-    line  go to state 6
-    exp   go to state 7
+    block            go to state 14
+    sentence         go to state 15
+    exp              go to state 16
+    var_declaration  go to state 17
 
 
 State 2
@@ -157,51 +179,450 @@ State 2
 
 State 3
 
-    6 exp: _PLUS_OP .
+   14 exp: _VARIABLE_NAME . _ASSIGN_UNARY_OP _INTEGER_VALUE
+   15    | _VARIABLE_NAME . _ASSIGN_UNARY_OP _FLOAT_VALUE
+   16    | _VARIABLE_NAME . _ASSIGN_UNARY_OP _CHAR_VALUE
 
-    $default  reduce using rule 6 (exp)
+    _ASSIGN_UNARY_OP  shift, and go to state 18
 
 
 State 4
 
-    7 exp: _MULTIPLE_OP .
+   17 var_declaration: _INT_DECLARATION . var_link_int
 
-    $default  reduce using rule 7 (exp)
+    _VARIABLE_NAME  shift, and go to state 19
+
+    var_link_int  go to state 20
 
 
 State 5
 
-    5 line: '\n' .
+   18 var_declaration: _FLOAT_RECLARATION . var_link_float
 
-    $default  reduce using rule 5 (line)
+    _VARIABLE_NAME  shift, and go to state 21
+
+    var_link_float  go to state 22
 
 
 State 6
 
-    2 code: code line .
+   19 var_declaration: _CHAR_DECLARATION . var_link_char
 
-    $default  reduce using rule 2 (code)
+    _VARIABLE_NAME  shift, and go to state 23
+
+    var_link_char  go to state 24
 
 
 State 7
 
-    4 line: exp . line
+    6 block: _IF_CONDITION . _LEFT_BRACKET exp _RIGHT_BRACKET block
 
-    _PLUS_OP      shift, and go to state 3
-    _MULTIPLE_OP  shift, and go to state 4
-    '\n'          shift, and go to state 5
-
-    _PLUS_OP      [reduce using rule 3 (line)]
-    _MULTIPLE_OP  [reduce using rule 3 (line)]
-    '\n'          [reduce using rule 3 (line)]
-    $default      reduce using rule 3 (line)
-
-    line  go to state 8
-    exp   go to state 7
+    _LEFT_BRACKET  shift, and go to state 25
 
 
 State 8
 
-    4 line: exp line .
+    7 block: _WHILE_CONDITION . _LEFT_BRACKET exp _RIGHT_BRACKET block
 
-    $default  reduce using rule 4 (line)
+    _LEFT_BRACKET  shift, and go to state 26
+
+
+State 9
+
+   10 exp: _PLUS_OP .
+
+    $default  reduce using rule 10 (exp)
+
+
+State 10
+
+   11 exp: _MINUS_OP .
+
+    $default  reduce using rule 11 (exp)
+
+
+State 11
+
+   12 exp: _MULTIPLE_OP .
+
+    $default  reduce using rule 12 (exp)
+
+
+State 12
+
+    5 block: _LEFT_BRACE . code _RIGHT_BRACE
+
+    $default  reduce using rule 1 (code)
+
+    code  go to state 27
+
+
+State 13
+
+    3 code: code _EOF .
+
+    $default  reduce using rule 3 (code)
+
+
+State 14
+
+    2 code: code block .
+
+    $default  reduce using rule 2 (code)
+
+
+State 15
+
+    4 block: sentence . _END_DIVIDED_CHAR
+
+    _END_DIVIDED_CHAR  shift, and go to state 28
+
+
+State 16
+
+    8 sentence: exp .
+   13 exp: exp . _COMMA_DIVIDED_CHAR exp
+
+    _COMMA_DIVIDED_CHAR  shift, and go to state 29
+
+    $default  reduce using rule 8 (sentence)
+
+
+State 17
+
+    9 sentence: var_declaration .
+
+    $default  reduce using rule 9 (sentence)
+
+
+State 18
+
+   14 exp: _VARIABLE_NAME _ASSIGN_UNARY_OP . _INTEGER_VALUE
+   15    | _VARIABLE_NAME _ASSIGN_UNARY_OP . _FLOAT_VALUE
+   16    | _VARIABLE_NAME _ASSIGN_UNARY_OP . _CHAR_VALUE
+
+    _INTEGER_VALUE  shift, and go to state 30
+    _FLOAT_VALUE    shift, and go to state 31
+    _CHAR_VALUE     shift, and go to state 32
+
+
+State 19
+
+   20 var_link_int: _VARIABLE_NAME . _ASSIGN_UNARY_OP _INTEGER_VALUE
+
+    _ASSIGN_UNARY_OP  shift, and go to state 33
+
+
+State 20
+
+   17 var_declaration: _INT_DECLARATION var_link_int .
+   21 var_link_int: var_link_int . _COMMA_DIVIDED_CHAR var_link_int
+
+    _COMMA_DIVIDED_CHAR  shift, and go to state 34
+
+    $default  reduce using rule 17 (var_declaration)
+
+
+State 21
+
+   22 var_link_float: _VARIABLE_NAME . _ASSIGN_UNARY_OP _FLOAT_VALUE
+
+    _ASSIGN_UNARY_OP  shift, and go to state 35
+
+
+State 22
+
+   18 var_declaration: _FLOAT_RECLARATION var_link_float .
+   23 var_link_float: var_link_float . _COMMA_DIVIDED_CHAR var_link_float
+
+    _COMMA_DIVIDED_CHAR  shift, and go to state 36
+
+    $default  reduce using rule 18 (var_declaration)
+
+
+State 23
+
+   24 var_link_char: _VARIABLE_NAME . _ASSIGN_UNARY_OP _CHAR_VALUE
+
+    _ASSIGN_UNARY_OP  shift, and go to state 37
+
+
+State 24
+
+   19 var_declaration: _CHAR_DECLARATION var_link_char .
+   25 var_link_char: var_link_char . _COMMA_DIVIDED_CHAR var_link_char
+
+    _COMMA_DIVIDED_CHAR  shift, and go to state 38
+
+    $default  reduce using rule 19 (var_declaration)
+
+
+State 25
+
+    6 block: _IF_CONDITION _LEFT_BRACKET . exp _RIGHT_BRACKET block
+
+    _VARIABLE_NAME  shift, and go to state 3
+    _PLUS_OP        shift, and go to state 9
+    _MINUS_OP       shift, and go to state 10
+    _MULTIPLE_OP    shift, and go to state 11
+
+    exp  go to state 39
+
+
+State 26
+
+    7 block: _WHILE_CONDITION _LEFT_BRACKET . exp _RIGHT_BRACKET block
+
+    _VARIABLE_NAME  shift, and go to state 3
+    _PLUS_OP        shift, and go to state 9
+    _MINUS_OP       shift, and go to state 10
+    _MULTIPLE_OP    shift, and go to state 11
+
+    exp  go to state 40
+
+
+State 27
+
+    2 code: code . block
+    3     | code . _EOF
+    5 block: _LEFT_BRACE code . _RIGHT_BRACE
+
+    _VARIABLE_NAME      shift, and go to state 3
+    _INT_DECLARATION    shift, and go to state 4
+    _FLOAT_RECLARATION  shift, and go to state 5
+    _CHAR_DECLARATION   shift, and go to state 6
+    _IF_CONDITION       shift, and go to state 7
+    _WHILE_CONDITION    shift, and go to state 8
+    _PLUS_OP            shift, and go to state 9
+    _MINUS_OP           shift, and go to state 10
+    _MULTIPLE_OP        shift, and go to state 11
+    _LEFT_BRACE         shift, and go to state 12
+    _RIGHT_BRACE        shift, and go to state 41
+    _EOF                shift, and go to state 13
+
+    block            go to state 14
+    sentence         go to state 15
+    exp              go to state 16
+    var_declaration  go to state 17
+
+
+State 28
+
+    4 block: sentence _END_DIVIDED_CHAR .
+
+    $default  reduce using rule 4 (block)
+
+
+State 29
+
+   13 exp: exp _COMMA_DIVIDED_CHAR . exp
+
+    _VARIABLE_NAME  shift, and go to state 3
+    _PLUS_OP        shift, and go to state 9
+    _MINUS_OP       shift, and go to state 10
+    _MULTIPLE_OP    shift, and go to state 11
+
+    exp  go to state 42
+
+
+State 30
+
+   14 exp: _VARIABLE_NAME _ASSIGN_UNARY_OP _INTEGER_VALUE .
+
+    $default  reduce using rule 14 (exp)
+
+
+State 31
+
+   15 exp: _VARIABLE_NAME _ASSIGN_UNARY_OP _FLOAT_VALUE .
+
+    $default  reduce using rule 15 (exp)
+
+
+State 32
+
+   16 exp: _VARIABLE_NAME _ASSIGN_UNARY_OP _CHAR_VALUE .
+
+    $default  reduce using rule 16 (exp)
+
+
+State 33
+
+   20 var_link_int: _VARIABLE_NAME _ASSIGN_UNARY_OP . _INTEGER_VALUE
+
+    _INTEGER_VALUE  shift, and go to state 43
+
+
+State 34
+
+   21 var_link_int: var_link_int _COMMA_DIVIDED_CHAR . var_link_int
+
+    _VARIABLE_NAME  shift, and go to state 19
+
+    var_link_int  go to state 44
+
+
+State 35
+
+   22 var_link_float: _VARIABLE_NAME _ASSIGN_UNARY_OP . _FLOAT_VALUE
+
+    _FLOAT_VALUE  shift, and go to state 45
+
+
+State 36
+
+   23 var_link_float: var_link_float _COMMA_DIVIDED_CHAR . var_link_float
+
+    _VARIABLE_NAME  shift, and go to state 21
+
+    var_link_float  go to state 46
+
+
+State 37
+
+   24 var_link_char: _VARIABLE_NAME _ASSIGN_UNARY_OP . _CHAR_VALUE
+
+    _CHAR_VALUE  shift, and go to state 47
+
+
+State 38
+
+   25 var_link_char: var_link_char _COMMA_DIVIDED_CHAR . var_link_char
+
+    _VARIABLE_NAME  shift, and go to state 23
+
+    var_link_char  go to state 48
+
+
+State 39
+
+    6 block: _IF_CONDITION _LEFT_BRACKET exp . _RIGHT_BRACKET block
+   13 exp: exp . _COMMA_DIVIDED_CHAR exp
+
+    _RIGHT_BRACKET       shift, and go to state 49
+    _COMMA_DIVIDED_CHAR  shift, and go to state 29
+
+
+State 40
+
+    7 block: _WHILE_CONDITION _LEFT_BRACKET exp . _RIGHT_BRACKET block
+   13 exp: exp . _COMMA_DIVIDED_CHAR exp
+
+    _RIGHT_BRACKET       shift, and go to state 50
+    _COMMA_DIVIDED_CHAR  shift, and go to state 29
+
+
+State 41
+
+    5 block: _LEFT_BRACE code _RIGHT_BRACE .
+
+    $default  reduce using rule 5 (block)
+
+
+State 42
+
+   13 exp: exp . _COMMA_DIVIDED_CHAR exp
+   13    | exp _COMMA_DIVIDED_CHAR exp .
+
+    $default  reduce using rule 13 (exp)
+
+
+State 43
+
+   20 var_link_int: _VARIABLE_NAME _ASSIGN_UNARY_OP _INTEGER_VALUE .
+
+    $default  reduce using rule 20 (var_link_int)
+
+
+State 44
+
+   21 var_link_int: var_link_int . _COMMA_DIVIDED_CHAR var_link_int
+   21             | var_link_int _COMMA_DIVIDED_CHAR var_link_int .
+
+    $default  reduce using rule 21 (var_link_int)
+
+
+State 45
+
+   22 var_link_float: _VARIABLE_NAME _ASSIGN_UNARY_OP _FLOAT_VALUE .
+
+    $default  reduce using rule 22 (var_link_float)
+
+
+State 46
+
+   23 var_link_float: var_link_float . _COMMA_DIVIDED_CHAR var_link_float
+   23               | var_link_float _COMMA_DIVIDED_CHAR var_link_float .
+
+    $default  reduce using rule 23 (var_link_float)
+
+
+State 47
+
+   24 var_link_char: _VARIABLE_NAME _ASSIGN_UNARY_OP _CHAR_VALUE .
+
+    $default  reduce using rule 24 (var_link_char)
+
+
+State 48
+
+   25 var_link_char: var_link_char . _COMMA_DIVIDED_CHAR var_link_char
+   25              | var_link_char _COMMA_DIVIDED_CHAR var_link_char .
+
+    $default  reduce using rule 25 (var_link_char)
+
+
+State 49
+
+    6 block: _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET . block
+
+    _VARIABLE_NAME      shift, and go to state 3
+    _INT_DECLARATION    shift, and go to state 4
+    _FLOAT_RECLARATION  shift, and go to state 5
+    _CHAR_DECLARATION   shift, and go to state 6
+    _IF_CONDITION       shift, and go to state 7
+    _WHILE_CONDITION    shift, and go to state 8
+    _PLUS_OP            shift, and go to state 9
+    _MINUS_OP           shift, and go to state 10
+    _MULTIPLE_OP        shift, and go to state 11
+    _LEFT_BRACE         shift, and go to state 12
+
+    block            go to state 51
+    sentence         go to state 15
+    exp              go to state 16
+    var_declaration  go to state 17
+
+
+State 50
+
+    7 block: _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET . block
+
+    _VARIABLE_NAME      shift, and go to state 3
+    _INT_DECLARATION    shift, and go to state 4
+    _FLOAT_RECLARATION  shift, and go to state 5
+    _CHAR_DECLARATION   shift, and go to state 6
+    _IF_CONDITION       shift, and go to state 7
+    _WHILE_CONDITION    shift, and go to state 8
+    _PLUS_OP            shift, and go to state 9
+    _MINUS_OP           shift, and go to state 10
+    _MULTIPLE_OP        shift, and go to state 11
+    _LEFT_BRACE         shift, and go to state 12
+
+    block            go to state 52
+    sentence         go to state 15
+    exp              go to state 16
+    var_declaration  go to state 17
+
+
+State 51
+
+    6 block: _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block .
+
+    $default  reduce using rule 6 (block)
+
+
+State 52
+
+    7 block: _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block .
+
+    $default  reduce using rule 7 (block)

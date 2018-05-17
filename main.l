@@ -230,8 +230,11 @@ char_value                  \'.\'
 
 [ \t] {;}
 
-[\n] {
-    return '\n';
+[\n] {;}
+
+<<EOF>> {
+    printDetail("_EOF", yytext);
+    return _EOF;
 }
 
 . {

@@ -1123,25 +1123,28 @@ case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
 #line 234 "main.l"
+{;}
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 236 "main.l"
 {
-    return '\n';
+    printDetail("_EOF", yytext);
+    return _EOF;
 }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 238 "main.l"
+#line 241 "main.l"
 {
     printf("error in line %d\n", yylineno);
 }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 242 "main.l"
+#line 245 "main.l"
 ECHO;
 	YY_BREAK
-#line 1142 "main.yy.c"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 1147 "main.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2156,7 +2159,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 242 "main.l"
+#line 245 "main.l"
 
 
 void printDetail(char *yytext, char *type) {

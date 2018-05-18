@@ -7,23 +7,28 @@ enum node_kind {
     BINARY_OP_NODE,
     CONDITION_NODE,
     DATA_DECLARE_NODE,
-    LEFT_BRACKET_NODE,
-    RIGHT_BRACKET_NODE,
-    LEFT_BRACE_NODE,
-    RIGHT_BRACE_NODE,
+    BRACKET_NODE,
+    BRACE_NODE,
     DIVIDED_CHAR,
-    COMMENT_LEFT_NODE,
-    COMMENT_RIGHT_NODE
+    COMMENT_NODE
+};
+
+enum exp_kind {
+    INTEGER_EXP,
+    CHAR_EXP,
+    FLOAT_EXP,
+    NOT_EXP
 };
 
 typedef struct tree_node {
 	enum node_kind kind;
+    enum exp_kind exp_kind;
 	union {
 		char variable_name[32];        
         int int_value;
         char char_value;
         float float_value;
-        char op_name;
+        char op_name[32];
         char condition_name[32];
         char data_declare_name[32];
         char bracket;      

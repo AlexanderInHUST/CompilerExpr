@@ -111,6 +111,23 @@ char_value                  \'.\'
 
  /**********************/
 
+"||" {
+    printDetail("BINARY_OP_NODE", yytext);
+    return _OR_OP;
+}
+
+"&&" {
+    printDetail("BINARY_OP_NODE", yytext);
+    return _AND_OP;
+}
+
+"!" {
+    printDetail("UNARY_OP_NODE", yytext);
+    return _NOT_OP;
+}
+
+ /**********************/
+
 "+=" {
     printDetail("BINARY_OP_NODE", yytext);
     return _PLUS_ASSIGN_OP;

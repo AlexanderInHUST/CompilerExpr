@@ -74,8 +74,9 @@
 
     int yyerror(char *s);
     int yylex();
+    enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2);
 
-#line 79 "main.tab.c" /* yacc.c:339  */
+#line 80 "main.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -125,35 +126,36 @@ extern int yydebug;
     _MULTIPLE_OP = 270,
     _DIVIDE_OP = 271,
     _MODULE_OP = 272,
-    _PLUS_ASSIGN_OP = 273,
-    _MINUS_ASSIGN_OP = 274,
-    _MULTI_ASSIGN_OP = 275,
-    _DIVIDE_ASSIGN_OP = 276,
-    _MODULE_ASSIGN_OP = 277,
-    _SELF_PLUS_UNARY_OP = 278,
-    _SELF_MINUS_UNARY_OP = 279,
-    _LARGER_OP = 280,
-    _LESS_OP = 281,
-    _LARGER_EQUAL_OP = 282,
-    _LESS_EQUAL_OP = 283,
-    _NOT_EQUAL_OP = 284,
-    _EQUAL_OP = 285,
-    _LEFT_BRACKET = 286,
-    _RIGHT_BRACKET = 287,
-    _LEFT_BRACE = 288,
-    _RIGHT_BRACE = 289,
-    _END_DIVIDED_CHAR = 290,
-    _COMMA_DIVIDED_CHAR = 291,
-    _COMMENT_LEFT = 292,
-    _COMMENT_RIGHT = 293,
-    _EOF = 294,
-    _LEFT_SELF_PLUS_UNARY_OP = 295,
-    _LEFT_SELF_MINUS_UNARY_OP = 296,
-    _RIGHT_SELF_PLUS_UNARY_OP = 297,
-    _RIGHT_SELF_MINUS_UNARY_OP = 298,
-    _UMINUS_OP = 299,
-    _EXP_LEFT_BRACKET = 300,
-    _EXP_RIGHT_BRACKET = 301
+    _OR_OP = 273,
+    _AND_OP = 274,
+    _NOT_OP = 275,
+    _PLUS_ASSIGN_OP = 276,
+    _MINUS_ASSIGN_OP = 277,
+    _MULTI_ASSIGN_OP = 278,
+    _DIVIDE_ASSIGN_OP = 279,
+    _MODULE_ASSIGN_OP = 280,
+    _SELF_PLUS_UNARY_OP = 281,
+    _SELF_MINUS_UNARY_OP = 282,
+    _LARGER_OP = 283,
+    _LESS_OP = 284,
+    _LARGER_EQUAL_OP = 285,
+    _LESS_EQUAL_OP = 286,
+    _NOT_EQUAL_OP = 287,
+    _EQUAL_OP = 288,
+    _LEFT_BRACKET = 289,
+    _RIGHT_BRACKET = 290,
+    _LEFT_BRACE = 291,
+    _RIGHT_BRACE = 292,
+    _END_DIVIDED_CHAR = 293,
+    _COMMA_DIVIDED_CHAR = 294,
+    _COMMENT_LEFT = 295,
+    _COMMENT_RIGHT = 296,
+    _EOF = 297,
+    _LEFT_SELF_PLUS_UNARY_OP = 298,
+    _LEFT_SELF_MINUS_UNARY_OP = 299,
+    _RIGHT_SELF_PLUS_UNARY_OP = 300,
+    _RIGHT_SELF_MINUS_UNARY_OP = 301,
+    _UMINUS_OP = 302
   };
 #endif
 
@@ -162,14 +164,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 14 "main.y" /* yacc.c:355  */
+#line 15 "main.y" /* yacc.c:355  */
 
     int int_value;
     char name_value[32];
     float float_value;
+    char char_value;
     struct tree_node * tree_node;
 
-#line 173 "main.tab.c" /* yacc.c:355  */
+#line 176 "main.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -186,7 +189,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 190 "main.tab.c" /* yacc.c:358  */
+#line 193 "main.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -428,21 +431,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   75
+#define YYLAST   213
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  47
+#define YYNTOKENS  48
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  26
+#define YYNRULES  44
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  53
+#define YYNSTATES  86
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   301
+#define YYMAXUTOK   302
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -481,16 +484,18 @@ static const yytype_uint8 yytranslate[] =
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46
+      45,    46,    47
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    49,    49,    50,    51,    56,    59,    62,    65,    71,
-      72,    78,    79,    80,    81,    82,    83,    84,    88,    89,
-      90,    94,    95,    99,   100,   104,   105
+       0,    53,    53,    54,    55,    60,    63,    66,    69,    75,
+      78,    87,    93,    99,   105,   118,   124,   130,   136,   142,
+     151,   157,   163,   169,   175,   181,   190,   196,   205,   214,
+     223,   224,   225,   226,   227,   228,   232,   233,   234,   238,
+     239,   243,   244,   248,   249
 };
 #endif
 
@@ -503,16 +508,16 @@ static const char *const yytname[] =
   "_FLOAT_VALUE", "_CHAR_VALUE", "_INT_DECLARATION", "_FLOAT_RECLARATION",
   "_CHAR_DECLARATION", "_IF_CONDITION", "_WHILE_CONDITION",
   "_ASSIGN_UNARY_OP", "_PLUS_OP", "_MINUS_OP", "_MULTIPLE_OP",
-  "_DIVIDE_OP", "_MODULE_OP", "_PLUS_ASSIGN_OP", "_MINUS_ASSIGN_OP",
-  "_MULTI_ASSIGN_OP", "_DIVIDE_ASSIGN_OP", "_MODULE_ASSIGN_OP",
-  "_SELF_PLUS_UNARY_OP", "_SELF_MINUS_UNARY_OP", "_LARGER_OP", "_LESS_OP",
-  "_LARGER_EQUAL_OP", "_LESS_EQUAL_OP", "_NOT_EQUAL_OP", "_EQUAL_OP",
-  "_LEFT_BRACKET", "_RIGHT_BRACKET", "_LEFT_BRACE", "_RIGHT_BRACE",
-  "_END_DIVIDED_CHAR", "_COMMA_DIVIDED_CHAR", "_COMMENT_LEFT",
-  "_COMMENT_RIGHT", "_EOF", "_LEFT_SELF_PLUS_UNARY_OP",
-  "_LEFT_SELF_MINUS_UNARY_OP", "_RIGHT_SELF_PLUS_UNARY_OP",
-  "_RIGHT_SELF_MINUS_UNARY_OP", "_UMINUS_OP", "_EXP_LEFT_BRACKET",
-  "_EXP_RIGHT_BRACKET", "$accept", "code", "block", "sentence", "exp",
+  "_DIVIDE_OP", "_MODULE_OP", "_OR_OP", "_AND_OP", "_NOT_OP",
+  "_PLUS_ASSIGN_OP", "_MINUS_ASSIGN_OP", "_MULTI_ASSIGN_OP",
+  "_DIVIDE_ASSIGN_OP", "_MODULE_ASSIGN_OP", "_SELF_PLUS_UNARY_OP",
+  "_SELF_MINUS_UNARY_OP", "_LARGER_OP", "_LESS_OP", "_LARGER_EQUAL_OP",
+  "_LESS_EQUAL_OP", "_NOT_EQUAL_OP", "_EQUAL_OP", "_LEFT_BRACKET",
+  "_RIGHT_BRACKET", "_LEFT_BRACE", "_RIGHT_BRACE", "_END_DIVIDED_CHAR",
+  "_COMMA_DIVIDED_CHAR", "_COMMENT_LEFT", "_COMMENT_RIGHT", "_EOF",
+  "_LEFT_SELF_PLUS_UNARY_OP", "_LEFT_SELF_MINUS_UNARY_OP",
+  "_RIGHT_SELF_PLUS_UNARY_OP", "_RIGHT_SELF_MINUS_UNARY_OP", "_UMINUS_OP",
+  "$accept", "code", "block", "sentence", "exp", "assign_series",
   "var_declaration", "var_link_int", "var_link_float", "var_link_char", YY_NULLPTR
 };
 #endif
@@ -526,14 +531,14 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300,   301
+     295,   296,   297,   298,   299,   300,   301,   302
 };
 # endif
 
-#define YYPACT_NINF -25
+#define YYPACT_NINF -67
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-25)))
+  (!!((Yystate) == (-67)))
 
 #define YYTABLE_NINF -1
 
@@ -542,14 +547,17 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int8 yypact[] =
+static const yytype_int16 yypact[] =
 {
-     -25,     0,   -25,    -8,     3,    18,    29,     7,    10,   -25,
-     -25,   -25,   -25,   -25,   -25,    -1,     4,   -25,    54,    32,
-      11,    34,    25,    50,    27,    22,    22,     9,   -25,    22,
-     -25,   -25,   -25,    60,     3,    49,    18,    59,    29,    -6,
-      -5,   -25,   -25,   -25,   -25,   -25,   -25,   -25,   -25,    42,
-      42,   -25,   -25
+     -67,     0,   -67,     1,    11,    12,    18,     3,     4,   -67,
+     -67,   -67,    -4,   -67,   -67,   -67,   -67,   -67,   -67,   -67,
+      44,    23,     2,    27,    28,    31,    29,    44,    44,     9,
+     -67,   -67,   -67,   -67,   -67,    44,   153,    40,    11,    64,
+      12,    69,    18,    72,    99,   -67,   126,    44,    44,    44,
+      44,    44,    44,    44,    44,    44,    44,    44,    44,    44,
+      44,   -67,   -67,   -67,   -67,   -67,   -67,    63,    63,   -67,
+     -11,   -11,   -67,   -67,   -67,   174,   174,    14,    14,    14,
+      14,    66,    66,   180,   -67,   -67
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -557,24 +565,27 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,     0,     0,     0,     0,     0,     0,    11,
-      12,    13,     2,     4,     3,     0,     9,    10,     0,     0,
-      18,     0,    19,     0,    20,     0,     0,     0,     5,     0,
-      15,    16,    17,     0,     0,     0,     0,     0,     0,     0,
-       0,     6,    14,    21,    22,    23,    24,    25,    26,     0,
-       0,     7,     8
+       2,     0,     1,     0,     0,     0,     0,     0,     0,     2,
+       4,     3,     0,     9,    30,    31,    32,    33,    34,    35,
+       0,     0,    36,     0,    37,     0,    38,     0,     0,     0,
+       5,    11,    12,    13,    14,     0,    10,     0,     0,     0,
+       0,     0,     0,     0,     0,     6,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    39,    40,    41,    42,    43,    44,     0,     0,    29,
+      15,    16,    17,    18,    19,    26,    27,    20,    21,    22,
+      23,    25,    24,    28,     7,     8
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -25,    55,   -21,   -25,   -24,   -25,    35,    30,    33
+     -67,    67,   -66,   -67,     5,   -67,   -67,    39,    52,    42
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,    14,    15,    16,    17,    20,    22,    24
+      -1,     1,    11,    12,    36,    20,    13,    22,    24,    26
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -582,54 +593,89 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       2,    39,    40,     3,    18,    42,    19,     4,     5,     6,
-       7,     8,     3,     9,    10,    11,     4,     5,     6,     7,
-       8,    21,     9,    10,    11,     3,    49,    50,    51,    52,
-      29,    29,    23,    12,    28,     9,    10,    11,    25,    13,
-      29,    26,    12,    41,    33,     3,    35,    34,    13,     4,
-       5,     6,     7,     8,    45,     9,    10,    11,    30,    31,
-      32,    36,    37,    38,    43,    47,    46,    27,     0,    44,
-       0,    48,     0,     0,     0,    12
+       2,    84,    85,     3,    49,    50,    51,     4,     5,     6,
+       7,     8,     3,    14,    21,    23,     4,     5,     6,     7,
+       8,    25,    15,    16,    17,    18,    19,    47,    48,    49,
+      50,    51,    43,    44,    30,    37,     9,    27,    28,    39,
+      46,    38,    10,    41,    61,     9,    45,    31,    32,    33,
+      34,    10,    70,    71,    72,    73,    74,    75,    76,    77,
+      78,    79,    80,    81,    82,    83,     3,    40,    42,    63,
+       4,     5,     6,     7,     8,    65,    29,    62,    35,    47,
+      48,    49,    50,    51,    66,    47,    48,    49,    50,    51,
+      52,    53,    64,     0,    54,    55,    56,    57,     0,     9,
+      54,    55,    56,    57,    58,    59,     0,    67,     0,     0,
+       0,    60,    47,    48,    49,    50,    51,    52,    53,     0,
+       0,     0,     0,     0,     0,     0,     0,    54,    55,    56,
+      57,    58,    59,     0,    68,     0,     0,     0,    60,    47,
+      48,    49,    50,    51,    52,    53,     0,     0,     0,     0,
+       0,     0,     0,     0,    54,    55,    56,    57,    58,    59,
+       0,    69,     0,     0,     0,    60,    47,    48,    49,    50,
+      51,    52,    53,     0,     0,     0,     0,     0,     0,     0,
+       0,    54,    55,    56,    57,    58,    59,    47,    48,    49,
+      50,    51,    60,    47,    48,    49,    50,    51,    52,    53,
+       0,     0,    54,    55,    56,    57,    58,    59,    54,    55,
+      56,    57,    58,    59
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,    25,    26,     3,    12,    29,     3,     7,     8,     9,
-      10,    11,     3,    13,    14,    15,     7,     8,     9,    10,
-      11,     3,    13,    14,    15,     3,    32,    32,    49,    50,
-      36,    36,     3,    33,    35,    13,    14,    15,    31,    39,
-      36,    31,    33,    34,    12,     3,    12,    36,    39,     7,
-       8,     9,    10,    11,     5,    13,    14,    15,     4,     5,
-       6,    36,    12,    36,     4,     6,    36,    12,    -1,    34,
-      -1,    38,    -1,    -1,    -1,    33
+       0,    67,    68,     3,    15,    16,    17,     7,     8,     9,
+      10,    11,     3,    12,     3,     3,     7,     8,     9,    10,
+      11,     3,    21,    22,    23,    24,    25,    13,    14,    15,
+      16,    17,    27,    28,    38,    12,    36,    34,    34,    12,
+      35,    39,    42,    12,     4,    36,    37,     3,     4,     5,
+       6,    42,    47,    48,    49,    50,    51,    52,    53,    54,
+      55,    56,    57,    58,    59,    60,     3,    39,    39,     5,
+       7,     8,     9,    10,    11,     6,     9,    38,    34,    13,
+      14,    15,    16,    17,    42,    13,    14,    15,    16,    17,
+      18,    19,    40,    -1,    28,    29,    30,    31,    -1,    36,
+      28,    29,    30,    31,    32,    33,    -1,    35,    -1,    -1,
+      -1,    39,    13,    14,    15,    16,    17,    18,    19,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    28,    29,    30,
+      31,    32,    33,    -1,    35,    -1,    -1,    -1,    39,    13,
+      14,    15,    16,    17,    18,    19,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    28,    29,    30,    31,    32,    33,
+      -1,    35,    -1,    -1,    -1,    39,    13,    14,    15,    16,
+      17,    18,    19,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    28,    29,    30,    31,    32,    33,    13,    14,    15,
+      16,    17,    39,    13,    14,    15,    16,    17,    18,    19,
+      -1,    -1,    28,    29,    30,    31,    32,    33,    28,    29,
+      30,    31,    32,    33
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    48,     0,     3,     7,     8,     9,    10,    11,    13,
-      14,    15,    33,    39,    49,    50,    51,    52,    12,     3,
-      53,     3,    54,     3,    55,    31,    31,    48,    35,    36,
-       4,     5,     6,    12,    36,    12,    36,    12,    36,    51,
-      51,    34,    51,     4,    53,     5,    54,     6,    55,    32,
-      32,    49,    49
+       0,    49,     0,     3,     7,     8,     9,    10,    11,    36,
+      42,    50,    51,    54,    12,    21,    22,    23,    24,    25,
+      53,     3,    55,     3,    56,     3,    57,    34,    34,    49,
+      38,     3,     4,     5,     6,    34,    52,    12,    39,    12,
+      39,    12,    39,    52,    52,    37,    52,    13,    14,    15,
+      16,    17,    18,    19,    28,    29,    30,    31,    32,    33,
+      39,     4,    55,     5,    56,     6,    57,    35,    35,    35,
+      52,    52,    52,    52,    52,    52,    52,    52,    52,    52,
+      52,    52,    52,    52,    50,    50
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    47,    48,    48,    48,    49,    49,    49,    49,    50,
-      50,    51,    51,    51,    51,    51,    51,    51,    52,    52,
-      52,    53,    53,    54,    54,    55,    55
+       0,    48,    49,    49,    49,    50,    50,    50,    50,    51,
+      51,    52,    52,    52,    52,    52,    52,    52,    52,    52,
+      52,    52,    52,    52,    52,    52,    52,    52,    52,    52,
+      53,    53,    53,    53,    53,    53,    54,    54,    54,    55,
+      55,    56,    56,    57,    57
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     2,     2,     2,     3,     5,     5,     1,
-       1,     1,     1,     1,     3,     3,     3,     3,     2,     2,
-       2,     3,     3,     3,     3,     3,     3
+       3,     1,     1,     1,     1,     3,     3,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       1,     1,     1,     1,     1,     1,     2,     2,     2,     3,
+       3,     3,     3,     3,     3
 };
 
 
@@ -1306,55 +1352,272 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 51 "main.y" /* yacc.c:1661  */
+#line 55 "main.y" /* yacc.c:1661  */
     {
             printf("A block for whole program\n"); return 0;
         }
-#line 1314 "main.tab.c" /* yacc.c:1661  */
+#line 1360 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 56 "main.y" /* yacc.c:1661  */
+#line 60 "main.y" /* yacc.c:1661  */
     {
             ;
         }
-#line 1322 "main.tab.c" /* yacc.c:1661  */
+#line 1368 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 59 "main.y" /* yacc.c:1661  */
+#line 63 "main.y" /* yacc.c:1661  */
     {
             printf("A block for brace block\n");
         }
-#line 1330 "main.tab.c" /* yacc.c:1661  */
+#line 1376 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 7:
-#line 62 "main.y" /* yacc.c:1661  */
+#line 66 "main.y" /* yacc.c:1661  */
     {
             printf("An if sentence\n");
         }
-#line 1338 "main.tab.c" /* yacc.c:1661  */
+#line 1384 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 8:
-#line 65 "main.y" /* yacc.c:1661  */
+#line 69 "main.y" /* yacc.c:1661  */
     {
             printf("A while sentence\n");
         }
-#line 1346 "main.tab.c" /* yacc.c:1661  */
+#line 1392 "main.tab.c" /* yacc.c:1661  */
     break;
 
-  case 10:
-#line 72 "main.y" /* yacc.c:1661  */
+  case 9:
+#line 75 "main.y" /* yacc.c:1661  */
     {
             printf("A declaration\n");
         }
-#line 1354 "main.tab.c" /* yacc.c:1661  */
+#line 1400 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 10:
+#line 78 "main.y" /* yacc.c:1661  */
+    {
+            printf("A assignment op:%s\n", (yyvsp[0].tree_node)->op_name);
+        }
+#line 1408 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 11:
+#line 87 "main.y" /* yacc.c:1661  */
+    {         
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->kind = VARIABLE_NODE;
+            (yyval.tree_node)->exp_kind = NOT_EXP;
+            strcpy((yyval.tree_node)->variable_name, (yyvsp[0].name_value));
+        }
+#line 1419 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 12:
+#line 93 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->kind = CONST_INT_NODE;
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            (yyval.tree_node)->int_value = (yyvsp[0].int_value);
+        }
+#line 1430 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 13:
+#line 99 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->kind = CONST_FLOAT_NODE;
+            (yyval.tree_node)->exp_kind = FLOAT_EXP;
+            (yyval.tree_node)->float_value = (yyvsp[0].float_value);
+        }
+#line 1441 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 14:
+#line 105 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->kind = CONST_FLOAT_NODE;
+            (yyval.tree_node)->exp_kind = CHAR_EXP;
+            (yyval.tree_node)->char_value = (yyvsp[0].char_value);
+        }
+#line 1452 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 15:
+#line 118 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, "+");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1463 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 16:
+#line 124 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, "-");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1474 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 17:
+#line 130 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, "*");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1485 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 18:
+#line 136 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, "/");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1496 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 19:
+#line 142 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, "%");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1507 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 20:
+#line 151 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, ">");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1518 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 21:
+#line 157 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "<");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1529 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 22:
+#line 163 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, ">=");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1540 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 23:
+#line 169 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "<=");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1551 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 24:
+#line 175 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "==");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1562 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 25:
+#line 181 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "!=");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1573 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 26:
+#line 190 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "||");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1584 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 27:
+#line 196 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = INTEGER_EXP;
+            strcpy((yyval.tree_node)->op_name, "&&");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+    }
+#line 1595 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 28:
+#line 205 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
+            strcpy((yyval.tree_node)->op_name, ",");
+            (yyval.tree_node)->kind = BINARY_OP_NODE;
+        }
+#line 1606 "main.tab.c" /* yacc.c:1661  */
+    break;
+
+  case 29:
+#line 214 "main.y" /* yacc.c:1661  */
+    {
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = (yyvsp[-1].tree_node)->exp_kind;
+            strcpy((yyval.tree_node)->op_name, "()");
+            (yyval.tree_node)->kind = BRACKET_NODE;
+        }
+#line 1617 "main.tab.c" /* yacc.c:1661  */
     break;
 
 
-#line 1358 "main.tab.c" /* yacc.c:1661  */
+#line 1621 "main.tab.c" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1582,7 +1845,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 107 "main.y" /* yacc.c:1906  */
+#line 251 "main.y" /* yacc.c:1906  */
 
 
 int main(int argc, char *argv[]){
@@ -1592,4 +1855,18 @@ int main(int argc, char *argv[]){
     }
 	yyparse();
 	return 0;
+}
+
+enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2) {
+    if (e1->exp_kind == FLOAT_EXP || e2->exp_kind == FLOAT_EXP) {
+        return FLOAT_EXP;
+    } else if (e1->exp_kind == CHAR_EXP && e2->exp_kind == CHAR_EXP) {
+        return CHAR_EXP;
+    } else {
+        return INTEGER_EXP;
+    }
+}
+
+void binary_operation(struct tree_node * result, struct tree_node * e1, struct tree_node * e2) {
+
 }

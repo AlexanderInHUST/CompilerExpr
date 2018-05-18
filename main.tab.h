@@ -60,35 +60,36 @@ extern int yydebug;
     _MULTIPLE_OP = 270,
     _DIVIDE_OP = 271,
     _MODULE_OP = 272,
-    _PLUS_ASSIGN_OP = 273,
-    _MINUS_ASSIGN_OP = 274,
-    _MULTI_ASSIGN_OP = 275,
-    _DIVIDE_ASSIGN_OP = 276,
-    _MODULE_ASSIGN_OP = 277,
-    _SELF_PLUS_UNARY_OP = 278,
-    _SELF_MINUS_UNARY_OP = 279,
-    _LARGER_OP = 280,
-    _LESS_OP = 281,
-    _LARGER_EQUAL_OP = 282,
-    _LESS_EQUAL_OP = 283,
-    _NOT_EQUAL_OP = 284,
-    _EQUAL_OP = 285,
-    _LEFT_BRACKET = 286,
-    _RIGHT_BRACKET = 287,
-    _LEFT_BRACE = 288,
-    _RIGHT_BRACE = 289,
-    _END_DIVIDED_CHAR = 290,
-    _COMMA_DIVIDED_CHAR = 291,
-    _COMMENT_LEFT = 292,
-    _COMMENT_RIGHT = 293,
-    _EOF = 294,
-    _LEFT_SELF_PLUS_UNARY_OP = 295,
-    _LEFT_SELF_MINUS_UNARY_OP = 296,
-    _RIGHT_SELF_PLUS_UNARY_OP = 297,
-    _RIGHT_SELF_MINUS_UNARY_OP = 298,
-    _UMINUS_OP = 299,
-    _EXP_LEFT_BRACKET = 300,
-    _EXP_RIGHT_BRACKET = 301
+    _OR_OP = 273,
+    _AND_OP = 274,
+    _NOT_OP = 275,
+    _PLUS_ASSIGN_OP = 276,
+    _MINUS_ASSIGN_OP = 277,
+    _MULTI_ASSIGN_OP = 278,
+    _DIVIDE_ASSIGN_OP = 279,
+    _MODULE_ASSIGN_OP = 280,
+    _SELF_PLUS_UNARY_OP = 281,
+    _SELF_MINUS_UNARY_OP = 282,
+    _LARGER_OP = 283,
+    _LESS_OP = 284,
+    _LARGER_EQUAL_OP = 285,
+    _LESS_EQUAL_OP = 286,
+    _NOT_EQUAL_OP = 287,
+    _EQUAL_OP = 288,
+    _LEFT_BRACKET = 289,
+    _RIGHT_BRACKET = 290,
+    _LEFT_BRACE = 291,
+    _RIGHT_BRACE = 292,
+    _END_DIVIDED_CHAR = 293,
+    _COMMA_DIVIDED_CHAR = 294,
+    _COMMENT_LEFT = 295,
+    _COMMENT_RIGHT = 296,
+    _EOF = 297,
+    _LEFT_SELF_PLUS_UNARY_OP = 298,
+    _LEFT_SELF_MINUS_UNARY_OP = 299,
+    _RIGHT_SELF_PLUS_UNARY_OP = 300,
+    _RIGHT_SELF_MINUS_UNARY_OP = 301,
+    _UMINUS_OP = 302
   };
 #endif
 
@@ -97,14 +98,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 14 "main.y" /* yacc.c:1915  */
+#line 15 "main.y" /* yacc.c:1915  */
 
     int int_value;
     char name_value[32];
     float float_value;
+    char char_value;
     struct tree_node * tree_node;
 
-#line 108 "main.tab.h" /* yacc.c:1915  */
+#line 110 "main.tab.h" /* yacc.c:1915  */
 };
 
 typedef union YYSTYPE YYSTYPE;

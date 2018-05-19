@@ -1,3 +1,5 @@
-a = 3.4f + 5;
-c = 3;
-c = 5, 3 + (1 + 4, 6 * 6 || 3);
+if (a == a + 4) {
+    p = s;
+} else p = s;
+if (a) d = d; else if (v) g = d; else if(d) g = d;  g = a;
+while (a) d = 4;

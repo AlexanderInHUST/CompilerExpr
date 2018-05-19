@@ -51,6 +51,11 @@ char_value                  \'.\'
     return _WHILE_CONDITION;
 }
 
+"else" {
+    printDetail("CONDITION_NODE", yytext);
+    return _ELSE_CONDITION;
+}
+
  /**********************/
 
 {variable_name} {

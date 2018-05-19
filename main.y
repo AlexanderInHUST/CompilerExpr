@@ -27,7 +27,7 @@
 %token      <char_value>    _CHAR_VALUE
 
 %token      _INT_DECLARATION _FLOAT_RECLARATION _CHAR_DECLARATION
-%token      _IF_CONDITION _WHILE_CONDITION
+%token      _IF_CONDITION _WHILE_CONDITION _ELSE_CONDITION
 %token      _ASSIGN_UNARY_OP _PLUS_OP _MINUS_OP _MULTIPLE_OP _DIVIDE_OP _MODULE_OP
 %token      _OR_OP _AND_OP _NOT_OP
 %token      _PLUS_ASSIGN_OP _MINUS_ASSIGN_OP _MULTI_ASSIGN_OP _DIVIDE_ASSIGN_OP _MODULE_ASSIGN_OP
@@ -52,9 +52,18 @@
 
 code:
     |   code block
-    |   code _EOF {
-            printf("A block for whole program\n"); return 0;
-        }
+    |   code if_conditions
+    |   code while_conditions
+    ;
+
+if_conditions:
+        _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block
+    |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION block
+    |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION if_conditions
+    ;
+
+while_conditions:
+        _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block 
     ;
 
 block:  sentence _END_DIVIDED_CHAR {
@@ -63,21 +72,18 @@ block:  sentence _END_DIVIDED_CHAR {
     |   _LEFT_BRACE code _RIGHT_BRACE {
             printf("A block for brace block\n");
         }
-    |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block {
-            printf("An if sentence\n");
-        }
-    |   _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block {
-            printf("A while sentence\n");
+    |   _EOF {
+            printf("A block for whole program\n"); return 0;
         }
     ;
 
 sentence:
-        var_declaration {
+        declaration_series var_declaration {
             printf("A declaration\n");
         }
     |   _VARIABLE_NAME assign_series exp {
             printf("A assignment op:%s\n", $3->op_name);
-        };
+        }
     ;
 
 exp:    
@@ -111,7 +117,45 @@ exp:
 
     /********************************************************/
 
+    |   _VARIABLE_NAME _SELF_PLUS_UNARY_OP %prec _RIGHT_SELF_PLUS_UNARY_OP {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            char op_name[30];
+            strcpy(op_name, $1);
+            strcat(op_name, "++");
+            strcpy($$->op_name, op_name);
+            $$->exp_kind = INTEGER_EXP;
+            $$->kind = UNARY_OP_NODE;
+        }
 
+    |   _VARIABLE_NAME _RIGHT_SELF_MINUS_UNARY_OP %prec _RIGHT_SELF_MINUS_UNARY_OP {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            char op_name[30];
+            strcpy(op_name, $1);
+            strcat(op_name, "--");
+            strcpy($$->op_name, op_name);
+            $$->exp_kind = INTEGER_EXP;
+            $$->kind = UNARY_OP_NODE;
+        }
+
+    |   _LEFT_SELF_PLUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_PLUS_UNARY_OP {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            char op_name[30];
+            strcpy(op_name, "++");
+            strcat(op_name, $2);
+            strcpy($$->op_name, op_name);
+            $$->exp_kind = INTEGER_EXP;
+            $$->kind = UNARY_OP_NODE;
+        }
+
+    |   _LEFT_SELF_MINUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_MINUS_UNARY_OP {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            char op_name[30];
+            strcpy(op_name, "--");
+            strcat(op_name, $2);
+            strcpy($$->op_name, op_name);
+            $$->exp_kind = INTEGER_EXP;
+            $$->kind = UNARY_OP_NODE;
+        }
 
     /********************************************************/
 
@@ -202,9 +246,9 @@ exp:
 
     /**************************/
 
-    |   exp _COMMA_DIVIDED_CHAR exp {
+    |   _LEFT_BRACKET exp _COMMA_DIVIDED_CHAR exp _RIGHT_BRACKET {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            $$->exp_kind = get_exp_kind($1, $3);
+            $$->exp_kind = get_exp_kind($2, $4);
             strcpy($$->op_name, ",");
             $$->kind = BINARY_OP_NODE;
         }
@@ -228,26 +272,17 @@ assign_series:
     |   _MODULE_ASSIGN_OP
     ;
 
+declaration_series:
+        _INT_DECLARATION
+    |   _CHAR_DECLARATION
+    |   _FLOAT_RECLARATION
+    ;
+
 var_declaration:
-        _INT_DECLARATION var_link_int
-    |   _FLOAT_RECLARATION var_link_float
-    |   _CHAR_DECLARATION var_link_char
+        _VARIABLE_NAME assign_series exp
+    |   var_declaration _COMMA_DIVIDED_CHAR var_declaration
     ;
 
-var_link_int:
-        _VARIABLE_NAME _ASSIGN_UNARY_OP _INTEGER_VALUE
-    |   var_link_int _COMMA_DIVIDED_CHAR var_link_int
-    ;
-
-var_link_float:
-        _VARIABLE_NAME _ASSIGN_UNARY_OP _FLOAT_VALUE
-    |   var_link_float _COMMA_DIVIDED_CHAR var_link_float
-    ;
-
-var_link_char:
-        _VARIABLE_NAME _ASSIGN_UNARY_OP _CHAR_VALUE
-    |   var_link_char _COMMA_DIVIDED_CHAR var_link_char
-    ;
 %%
 
 int main(int argc, char *argv[]){
@@ -267,8 +302,4 @@ enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2) {
     } else {
         return INTEGER_EXP;
     }
-}
-
-void binary_operation(struct tree_node * result, struct tree_node * e1, struct tree_node * e2) {
-
 }

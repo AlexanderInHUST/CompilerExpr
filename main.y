@@ -9,6 +9,7 @@
 
     int yyerror(char *s);
     int yylex();
+    void exit(int);
     enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2);
     
 %}
@@ -366,6 +367,24 @@ exp:
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = $2->exp_kind;
             strcpy($$->op_name, "()");
+            $$->kind = S_UNARY_OP_NODE;
+            $$->unary_child.child = $2;
+        }
+
+    /********************************************************/
+
+    |   _MINUS_OP exp %prec _UMINUS_OP {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            $$->exp_kind = $2->exp_kind;
+            strcpy($$->op_name, "-");
+            $$->kind = S_UNARY_OP_NODE;
+            $$->unary_child.child = $2;
+        }
+
+    |   _NOT_OP exp {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            $$->exp_kind = $2->exp_kind;
+            strcpy($$->op_name, "!");
             $$->kind = S_UNARY_OP_NODE;
             $$->unary_child.child = $2;
         }

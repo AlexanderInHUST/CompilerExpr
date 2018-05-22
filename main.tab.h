@@ -98,7 +98,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 16 "main.y" /* yacc.c:1915  */
+#line 17 "main.y" /* yacc.c:1915  */
 
     int int_value;
     char name_value[32];

@@ -254,10 +254,6 @@ char_value                  \'.\'
 
 [\n] {;}
 
-<<EOF>> {
-    printDetail("_EOF", yytext);
-    return _EOF;
-}
 
 . {
     printf("error in line %d\n", yylineno);
@@ -266,7 +262,7 @@ char_value                  \'.\'
 %%
 
 void printDetail(char *yytext, char *type) {
-    printf("{%s, %s}\n", type, yytext);
+    // printf("{%s, %s}\n", type, yytext);
 }
 
 int yyerror(char *text) {

@@ -1,5 +1,13 @@
-if (a == a + 4) {
-    p = s;
-} else p = s;
-if (a) d = d; else if (v) g = d; else if(d) g = d;  g = a;
-while (a) d = 4;
+int a = 0.56f, b = 0, c = 0;
+char a = '3';
+float a = 1 + 0.3f;
+if (a == b + 3) {
+    b = a * 4 + c++;
+} else if (a == 4) {
+    b = (a * 4 + 9) + c++ * 9;
+} else {
+    c = (a, b + 3);
+}
+while (a == 4) {
+    c = a + 4 + 3 * .44f+ 4;
+}

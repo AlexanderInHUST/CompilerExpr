@@ -85,12 +85,11 @@ extern int yydebug;
     _COMMA_DIVIDED_CHAR = 295,
     _COMMENT_LEFT = 296,
     _COMMENT_RIGHT = 297,
-    _EOF = 298,
-    _LEFT_SELF_PLUS_UNARY_OP = 299,
-    _LEFT_SELF_MINUS_UNARY_OP = 300,
-    _RIGHT_SELF_PLUS_UNARY_OP = 301,
-    _RIGHT_SELF_MINUS_UNARY_OP = 302,
-    _UMINUS_OP = 303
+    _LEFT_SELF_PLUS_UNARY_OP = 298,
+    _LEFT_SELF_MINUS_UNARY_OP = 299,
+    _RIGHT_SELF_PLUS_UNARY_OP = 300,
+    _RIGHT_SELF_MINUS_UNARY_OP = 301,
+    _UMINUS_OP = 302
   };
 #endif
 
@@ -99,15 +98,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 15 "main.y" /* yacc.c:1915  */
+#line 16 "main.y" /* yacc.c:1915  */
 
     int int_value;
     char name_value[32];
     float float_value;
-    char char_value;
+    char char_value[32];
     struct tree_node * tree_node;
 
-#line 111 "main.tab.h" /* yacc.c:1915  */
+#line 110 "main.tab.h" /* yacc.c:1915  */
 };
 
 typedef union YYSTYPE YYSTYPE;

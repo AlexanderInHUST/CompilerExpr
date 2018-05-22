@@ -1,16 +1,24 @@
 enum node_kind {
+    CODE_NODE,
+    BLOCK_NODE,
+    BLANK_NODE,
+
     VARIABLE_NODE,
     CONST_INT_NODE,
     CONST_CHAR_NODE,
     CONST_FLOAT_NODE,
+
+    S_UNARY_OP_NODE,
     UNARY_OP_NODE,
     BINARY_OP_NODE,
-    CONDITION_NODE,
+
+    IF_CONDITION_NODE,
+    IF_ELSE_CONDITION_NODE,
+    WHILE_CONDITION_NODE,
+
     DATA_DECLARE_NODE,
-    BRACKET_NODE,
-    BRACE_NODE,
-    DIVIDED_CHAR,
-    COMMENT_NODE
+    DATA_ASSIGN_BINARY_NODE,
+    DATA_ASSIGN_UNARY_NODE
 };
 
 enum exp_kind {
@@ -36,6 +44,11 @@ typedef struct tree_node {
 	};
     union {
         struct {
+            struct tree_node * first_child;
+            struct tree_node * second_child;
+            struct tree_node * third_child;
+        } trinary_children;
+        struct {
             struct tree_node * left_child;
             struct tree_node * right_child;
         } binary_children;
@@ -45,4 +58,4 @@ typedef struct tree_node {
     };
 } tree_node;
 
-
+void display(tree_node * T, int tab_num);

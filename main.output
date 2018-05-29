@@ -65,15 +65,16 @@ Grammar
    46                   | _CHAR_DECLARATION
    47                   | _FLOAT_RECLARATION
 
-   48 var_declaration: _VARIABLE_NAME assign_series exp
-   49                | var_declaration _COMMA_DIVIDED_CHAR var_declaration
+   48 var_declaration: _VARIABLE_NAME
+   49                | _VARIABLE_NAME assign_series exp
+   50                | var_declaration _COMMA_DIVIDED_CHAR var_declaration
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-_VARIABLE_NAME (258) 13 14 18 19 20 21 48
+_VARIABLE_NAME (258) 13 14 18 19 20 21 48 49
 _INTEGER_VALUE (259) 15
 _FLOAT_VALUE (260) 16
 _CHAR_VALUE (261) 17
@@ -110,7 +111,7 @@ _RIGHT_BRACKET (291) 7 8 9 10 35 36
 _LEFT_BRACE (292) 11
 _RIGHT_BRACE (293) 11
 _END_DIVIDED_CHAR (294) 6
-_COMMA_DIVIDED_CHAR (295) 35 49
+_COMMA_DIVIDED_CHAR (295) 35 50
 _COMMENT_LEFT (296)
 _COMMENT_RIGHT (297)
 _LEFT_SELF_PLUS_UNARY_OP (298) 20
@@ -139,13 +140,13 @@ sentence (54)
 exp (55)
     on left: 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
     32 33 34 35 36 37 38, on right: 7 8 9 10 13 22 23 24 25 26 27 28
-    29 30 31 32 33 34 35 36 37 38 48
+    29 30 31 32 33 34 35 36 37 38 49
 assign_series (56)
-    on left: 39 40 41 42 43 44, on right: 13 48
+    on left: 39 40 41 42 43 44, on right: 13 49
 declaration_series (57)
     on left: 45 46 47, on right: 12
 var_declaration (58)
-    on left: 48 49, on right: 12 49
+    on left: 48 49 50, on right: 12 50
 
 
 State 0
@@ -422,7 +423,8 @@ State 26
 
 State 27
 
-   48 var_declaration: _VARIABLE_NAME . assign_series exp
+   48 var_declaration: _VARIABLE_NAME .
+   49                | _VARIABLE_NAME . assign_series exp
 
     _ASSIGN_UNARY_OP   shift, and go to state 16
     _PLUS_ASSIGN_OP    shift, and go to state 17
@@ -431,13 +433,15 @@ State 27
     _DIVIDE_ASSIGN_OP  shift, and go to state 20
     _MODULE_ASSIGN_OP  shift, and go to state 21
 
+    $default  reduce using rule 48 (var_declaration)
+
     assign_series  go to state 42
 
 
 State 28
 
    12 sentence: declaration_series var_declaration .
-   49 var_declaration: var_declaration . _COMMA_DIVIDED_CHAR var_declaration
+   50 var_declaration: var_declaration . _COMMA_DIVIDED_CHAR var_declaration
 
     _COMMA_DIVIDED_CHAR  shift, and go to state 43
 
@@ -654,7 +658,7 @@ State 41
 
 State 42
 
-   48 var_declaration: _VARIABLE_NAME assign_series . exp
+   49 var_declaration: _VARIABLE_NAME assign_series . exp
 
     _VARIABLE_NAME             shift, and go to state 29
     _INTEGER_VALUE             shift, and go to state 30
@@ -671,7 +675,7 @@ State 42
 
 State 43
 
-   49 var_declaration: var_declaration _COMMA_DIVIDED_CHAR . var_declaration
+   50 var_declaration: var_declaration _COMMA_DIVIDED_CHAR . var_declaration
 
     _VARIABLE_NAME  shift, and go to state 27
 
@@ -1037,7 +1041,7 @@ State 66
    32    | exp . _NOT_EQUAL_OP exp
    33    | exp . _OR_OP exp
    34    | exp . _AND_OP exp
-   48 var_declaration: _VARIABLE_NAME assign_series exp .
+   49 var_declaration: _VARIABLE_NAME assign_series exp .
 
     _PLUS_OP          shift, and go to state 51
     _MINUS_OP         shift, and go to state 52
@@ -1053,15 +1057,15 @@ State 66
     _NOT_EQUAL_OP     shift, and go to state 62
     _EQUAL_OP         shift, and go to state 63
 
-    $default  reduce using rule 48 (var_declaration)
+    $default  reduce using rule 49 (var_declaration)
 
 
 State 67
 
-   49 var_declaration: var_declaration . _COMMA_DIVIDED_CHAR var_declaration
-   49                | var_declaration _COMMA_DIVIDED_CHAR var_declaration .
+   50 var_declaration: var_declaration . _COMMA_DIVIDED_CHAR var_declaration
+   50                | var_declaration _COMMA_DIVIDED_CHAR var_declaration .
 
-    $default  reduce using rule 49 (var_declaration)
+    $default  reduce using rule 50 (var_declaration)
 
 
 State 68

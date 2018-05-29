@@ -17,7 +17,7 @@
 
 variable_name               [A-Za-z][A-Za-z0-9]*
 integer_value               [0-9]+
-float_value                 [0-9]+(\.[0-9]+)?f
+float_value                 [0-9]*(\.[0-9]+)?f
 char_value                  \'.\'
 
 %%
@@ -266,6 +266,6 @@ void printDetail(char *yytext, char *type) {
 }
 
 int yyerror(char *text) {
-    printf("%s %s %d\n", text, yytext, yylineno);
+    printf("%s around \" %s \" at line number %d\n", text, yytext, yylineno);
     return 0;
 }

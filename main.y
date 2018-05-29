@@ -63,7 +63,7 @@ code:   {
         }
     |   code block {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            $$->exp_kind = $2->exp_kind;
+            $$->exp_kind = NOT_EXP;
             strcpy($$->op_name, $2->op_name);
             $$->kind = CODE_NODE;
             $$->binary_children.left_child = $1;
@@ -71,7 +71,7 @@ code:   {
         }
     |   code if_conditions {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            $$->exp_kind = $2->exp_kind;
+            $$->exp_kind = NOT_EXP;
             strcpy($$->op_name, $2->op_name);
             $$->kind = CODE_NODE;
             $$->binary_children.left_child = $1;
@@ -79,7 +79,7 @@ code:   {
         }
     |   code while_conditions {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            $$->exp_kind = $2->exp_kind;
+            $$->exp_kind = NOT_EXP;
             strcpy($$->op_name, $2->op_name);
             $$->kind = CODE_NODE;
             $$->binary_children.left_child = $1;
@@ -87,7 +87,7 @@ code:   {
         }
     |   code sentence _END_DIVIDED_CHAR {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            $$->exp_kind = $2->exp_kind;
+            $$->exp_kind = NOT_EXP;
             strcpy($$->op_name, $2->op_name);
             $$->kind = CODE_NODE;
             $$->binary_children.left_child = $1;
@@ -99,6 +99,7 @@ if_conditions:
         _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "if");
+            $$->exp_kind = NOT_EXP;
             $$->kind = IF_CONDITION_NODE;
             $$->binary_children.left_child = $3;
             $$->binary_children.right_child = $5;
@@ -107,6 +108,7 @@ if_conditions:
     |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION block {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "if-else");
+            $$->exp_kind = NOT_EXP;
             $$->kind = IF_ELSE_CONDITION_NODE;
             $$->trinary_children.first_child = $3;
             $$->trinary_children.second_child = $5;
@@ -116,6 +118,7 @@ if_conditions:
     |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION if_conditions {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "if-else");
+            $$->exp_kind = NOT_EXP;
             $$->kind = IF_ELSE_CONDITION_NODE;
             $$->trinary_children.first_child = $3;
             $$->trinary_children.second_child = $5;
@@ -127,6 +130,7 @@ while_conditions:
         _WHILE_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "while");
+            $$->exp_kind = NOT_EXP;
             $$->kind = WHILE_CONDITION_NODE;
             $$->binary_children.left_child = $3;
             $$->binary_children.right_child = $5;
@@ -136,6 +140,8 @@ while_conditions:
 block:  
         _LEFT_BRACE code _RIGHT_BRACE {
             $$ = (tree_node *) malloc (sizeof(tree_node));
+            $$->exp_kind = NOT_EXP;
+            strcpy($$->op_name, "block");
             $$->kind = BLOCK_NODE;
             $$->unary_child.child = $2;
         }
@@ -143,8 +149,8 @@ block:
 
 sentence:
         declaration_series var_declaration {
-            if ($1->exp_kind != $2->exp_kind) {
-                printf("value fit error.\n");
+            if (($1->exp_kind != $2->exp_kind) && $2->exp_kind != NOT_EXP) {
+                yyerror("value fit error");
                 exit(0);
             } else {
                 $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -157,10 +163,9 @@ sentence:
     |   _VARIABLE_NAME assign_series exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = $3->exp_kind;
-            char op_name[30];
-            strcpy(op_name, $1);
-            strcat(op_name, $2->op_name);
-            strcpy($$->op_name, op_name);
+            strcpy($$->complex_op.op1, $1);
+            strcpy($$->complex_op.op2, $2->op_name);
+            $$->complex_op.var_pos = 1;
             $$->kind = DATA_ASSIGN_UNARY_NODE;
             $$->unary_child.child = $3;
         }
@@ -173,7 +178,7 @@ exp:
         _VARIABLE_NAME {         
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->kind = VARIABLE_NODE;
-            $$->exp_kind = NOT_EXP;
+            $$->exp_kind = NOT_EXP;         // fix me
             strcpy($$->variable_name, $1);
         }
     |   _INTEGER_VALUE {
@@ -199,41 +204,37 @@ exp:
 
     |   _VARIABLE_NAME _SELF_PLUS_UNARY_OP %prec _RIGHT_SELF_PLUS_UNARY_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            char op_name[30];
-            strcpy(op_name, $1);
-            strcat(op_name, "++");
-            strcpy($$->op_name, op_name);
-            $$->exp_kind = INTEGER_EXP;
+            strcpy($$->complex_op.op1, $1);
+            strcpy($$->complex_op.op2, "++");
+            $$->complex_op.var_pos = 1;
+            $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
         }
 
     |   _VARIABLE_NAME _RIGHT_SELF_MINUS_UNARY_OP %prec _RIGHT_SELF_MINUS_UNARY_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            char op_name[30];
-            strcpy(op_name, $1);
-            strcat(op_name, "--");
-            strcpy($$->op_name, op_name);
-            $$->exp_kind = INTEGER_EXP;
+            strcpy($$->complex_op.op1, $1);
+            strcpy($$->complex_op.op2, "--");
+            $$->complex_op.var_pos = 1;
+            $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
         }
 
     |   _LEFT_SELF_PLUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_PLUS_UNARY_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            char op_name[30];
-            strcpy(op_name, "++");
-            strcat(op_name, $2);
-            strcpy($$->op_name, op_name);
-            $$->exp_kind = INTEGER_EXP;
+            strcpy($$->complex_op.op1, "++");
+            strcpy($$->complex_op.op2, $2);
+            $$->complex_op.var_pos = 2;
+            $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
         }
 
     |   _LEFT_SELF_MINUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_MINUS_UNARY_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
-            char op_name[30];
-            strcpy(op_name, "--");
-            strcat(op_name, $2);
-            strcpy($$->op_name, op_name);
-            $$->exp_kind = INTEGER_EXP;
+            strcpy($$->complex_op.op1, "--");
+            strcpy($$->complex_op.op2, $2);
+            $$->complex_op.var_pos = 2;
+            $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
         }
 
@@ -441,13 +442,18 @@ declaration_series:
     ;
 
 var_declaration:
-        _VARIABLE_NAME assign_series exp  {
+        _VARIABLE_NAME {
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            $$->exp_kind = NOT_EXP;        // fix me  
+            strcpy($$->variable_name, $1);
+            $$->kind = VARIABLE_NODE;
+        }
+    |   _VARIABLE_NAME assign_series exp  {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = $3->exp_kind;
-            char op_name[30];
-            strcpy(op_name, $1);
-            strcat(op_name, $2->op_name);
-            strcpy($$->op_name, op_name);
+            strcpy($$->complex_op.op1, $1);
+            strcpy($$->complex_op.op2, $2->op_name);
+            $$->complex_op.var_pos = 1;
             $$->kind = DATA_ASSIGN_UNARY_NODE;
             $$->unary_child.child = $3;
         }
@@ -477,6 +483,8 @@ enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2) {
         return FLOAT_EXP;
     } else if (e1->exp_kind == CHAR_EXP && e2->exp_kind == CHAR_EXP) {
         return CHAR_EXP;
+    } else if (e1->exp_kind == NOT_EXP && e2->exp_kind == NOT_EXP) {
+        return NOT_EXP;
     } else {
         return INTEGER_EXP;
     }

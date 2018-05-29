@@ -1,4 +1,4 @@
-int a = 0, b = 0, c = 0;
+int a = 3.4f, b, c = 0;
 char a = '3';
 float a = 1 + 0.3f;
 if (a == b + 3) {

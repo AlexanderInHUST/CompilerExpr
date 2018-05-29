@@ -20,7 +20,7 @@ void display(tree_node * T, int tab_num) {
 			break;
 		}
 		case UNARY_OP_NODE: {
-			printf("---[ %s ]\n", T->op_name);
+			printf("---[ %s%s ]\n", T->complex_op.op1, T->complex_op.op2);
 			break;
 		}
 		case S_UNARY_OP_NODE: {
@@ -50,7 +50,7 @@ void display(tree_node * T, int tab_num) {
 			break;
 		}
 		case DATA_ASSIGN_UNARY_NODE: {
-			printf("---[ %s ]", T->op_name);
+			printf("---[ %s%s ]", T->complex_op.op1, T->complex_op.op2);
 			display(T->unary_child.child, tab_num + 1);
 			break;
 		}

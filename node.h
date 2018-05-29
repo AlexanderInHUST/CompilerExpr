@@ -36,11 +36,12 @@ typedef struct tree_node {
         int int_value;
         char char_value;
         float float_value;
-        char op_name[32];
-        char condition_name[32];
-        char data_declare_name[32];
-        char bracket;      
-        char divided_char;           
+        char op_name[32];     
+        struct {
+            char op1[32];
+            char op2[32];
+            int var_pos;
+        } complex_op;
 	};
     union {
         struct {

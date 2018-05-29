@@ -1,3 +1,6 @@
+#ifndef NODE_H_GUARD
+#define NODE_H_GUARD
+
 enum node_kind {
     CODE_NODE,
     BLOCK_NODE,
@@ -16,9 +19,12 @@ enum node_kind {
     IF_ELSE_CONDITION_NODE,
     WHILE_CONDITION_NODE,
 
+    DATA_ASSIGN_NODE,
+
     DATA_DECLARE_NODE,
-    DATA_ASSIGN_BINARY_NODE,
-    DATA_ASSIGN_UNARY_NODE
+    DATA_DECLARE_VAR_NODE,
+    DATA_DECLARE_UNARY_NODE,
+    DATA_DECLARE_BINARY_NODE
 };
 
 enum exp_kind {
@@ -31,6 +37,7 @@ enum exp_kind {
 typedef struct tree_node {
 	enum node_kind kind;
     enum exp_kind exp_kind;
+    int field_level;
 	union {
 		char variable_name[32];        
         int int_value;
@@ -60,3 +67,5 @@ typedef struct tree_node {
 } tree_node;
 
 void display(tree_node * T, int tab_num);
+
+#endif

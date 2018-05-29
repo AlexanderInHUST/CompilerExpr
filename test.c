@@ -1,13 +1,15 @@
-int a = 3.4f, b, c = 0;
-char a = '3';
-float a = 1 + 0.3f;
+float b, c = 0;
 if (a == b + 3) {
-    b = -a * 4 + c++;
-} else if (a == 4) {
-    b = !(a * 4 + 9) + c++ * 9;
-} else {
-    c = (a, b + 3);
-}
-while (a == 4) {
-    c = a + 4 + 3 * .44f+ 4;
+    int a = 0; 
+    while (a == 4) {
+        char a = '3';
+        char qw = '4';
+    }
+    if (b == 2) {
+        float a = 4.0f;
+        float g = 3.3f + 4;
+    } else if (c == 3) {
+        float b = 4.0f;
+        float c = 3.3f;
+    }
 }

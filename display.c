@@ -31,7 +31,7 @@ void display(tree_node * T, int tab_num) {
 		case BINARY_OP_NODE: {
 			printf("---[ %s ]", T->op_name);
 			display(T->binary_children.left_child, tab_num + 1);
-			for (int i = 0; i < tab_num; i++) {
+			for (int i = 0; i < tab_num + 1; i++) {
 				printf("\t");
 			}
 			printf("|");
@@ -39,24 +39,40 @@ void display(tree_node * T, int tab_num) {
 			break;
 		}
 
-		case DATA_ASSIGN_BINARY_NODE: {
+		case DATA_ASSIGN_NODE: {
+			for (int i = 0; i < tab_num; i++) {
+				printf("\t");
+			}
+			printf("|---[ %s%s ]", T->complex_op.op1, T->complex_op.op2);
+			display(T->unary_child.child, tab_num + 1);
+			break;
+		}
+
+		case DATA_DECLARE_NODE: {
+			for (int i = 0; i < tab_num; i++) {
+				printf("\t");
+			}
+			printf("|---[ %s ]", T->op_name);
+			display(T->unary_child.child, tab_num + 1);
+			break;
+		}
+		case DATA_DECLARE_VAR_NODE: {
+			printf("---[ %s ]\n", T->variable_name);
+			break;
+		}
+		case DATA_DECLARE_UNARY_NODE: {
+			printf("---[ %s%s ]", T->complex_op.op1, T->complex_op.op2);
+			display(T->unary_child.child, tab_num + 1);
+			break;
+		}		
+		case DATA_DECLARE_BINARY_NODE: {
 			printf("---[ %s ]", T->op_name);
 			display(T->binary_children.left_child, tab_num + 1);
-			for (int i = 0; i < tab_num; i++) {
+			for (int i = 0; i < tab_num + 1; i++) {
 				printf("\t");
 			}
 			printf("|");
 			display(T->binary_children.right_child, tab_num + 1);
-			break;
-		}
-		case DATA_ASSIGN_UNARY_NODE: {
-			printf("---[ %s%s ]", T->complex_op.op1, T->complex_op.op2);
-			display(T->unary_child.child, tab_num + 1);
-			break;
-		}
-		case DATA_DECLARE_NODE: {
-			printf("---[ %s ]", T->op_name);
-			display(T->unary_child.child, tab_num + 1);
 			break;
 		}
 
@@ -74,32 +90,46 @@ void display(tree_node * T, int tab_num) {
 		}
 
 		case WHILE_CONDITION_NODE: {
-			printf("---[ %s ]", T->op_name);
-			display(T->binary_children.left_child, tab_num + 1);
 			for (int i = 0; i < tab_num; i++) {
 				printf("\t");
 			}
-			printf("|");
+			printf("|---[ %s ]", T->op_name);
+			display(T->binary_children.left_child, tab_num + 1);
+			for (int i = 0; i < tab_num + 1; i++) {
+				printf("\t");
+			}
+			printf("Then:\n");
 			display(T->binary_children.right_child, tab_num + 1);
 			break;
 		}
 		case IF_CONDITION_NODE: {
-			printf("---[ %s ]", T->op_name);
-			display(T->unary_child.child, tab_num + 1);
+			for (int i = 0; i < tab_num; i++) {
+				printf("\t");
+			}
+			printf("|---[ %s ]", T->op_name);
+			display(T->binary_children.left_child, tab_num + 1);
+			for (int i = 0; i < tab_num + 1; i++) {
+				printf("\t");
+			}
+			printf("Then:\n");
+			display(T->binary_children.right_child, tab_num + 1);
 			break;
 		}
 		case IF_ELSE_CONDITION_NODE: {
-			printf("---[ %s ]", T->op_name);
+			for (int i = 0; i < tab_num; i++) {
+				printf("\t");
+			}
+			printf("|---[ %s ]", T->op_name);
 			display(T->trinary_children.first_child, tab_num + 1);
-			for (int i = 0; i < tab_num; i++) {
+			for (int i = 0; i < tab_num + 1; i++) {
 				printf("\t");
 			}
-			printf("|");
+			printf("Then:\n");
 			display(T->trinary_children.second_child, tab_num + 1);
-			for (int i = 0; i < tab_num; i++) {
+			for (int i = 0; i < tab_num + 1; i++) {
 				printf("\t");
 			}
-			printf("|");
+			printf("Else:\n");
 			display(T->trinary_children.third_child, tab_num + 1);
 			break;
 		}

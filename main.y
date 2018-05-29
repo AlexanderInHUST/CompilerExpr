@@ -3,6 +3,8 @@
     #include "math.h"
     #include "string.h"
     #include "node.h"
+    #include "symbol_table.h"
+    #include "create_table.h"
 
     extern char *yytext;
     extern FILE *yyin;
@@ -54,6 +56,10 @@
 input:
         code {
             display($1, 0);
+            symbol_table * root = create_symbol_table();
+            create_tables(root, 0, $1, -1);
+            print_table(root, "", 1);
+            free_symbol_table(root, 0);
         }
     ;
 
@@ -154,7 +160,7 @@ sentence:
                 exit(0);
             } else {
                 $$ = (tree_node *) malloc (sizeof(tree_node));
-                $$->exp_kind = $2->exp_kind;
+                $$->exp_kind = $1->exp_kind;
                 strcpy($$->op_name, $1->op_name);
                 $$->kind = DATA_DECLARE_NODE;
                 $$->unary_child.child = $2;
@@ -166,7 +172,7 @@ sentence:
             strcpy($$->complex_op.op1, $1);
             strcpy($$->complex_op.op2, $2->op_name);
             $$->complex_op.var_pos = 1;
-            $$->kind = DATA_ASSIGN_UNARY_NODE;
+            $$->kind = DATA_ASSIGN_NODE;
             $$->unary_child.child = $3;
         }
     ;
@@ -446,7 +452,7 @@ var_declaration:
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = NOT_EXP;        // fix me  
             strcpy($$->variable_name, $1);
-            $$->kind = VARIABLE_NODE;
+            $$->kind = DATA_DECLARE_VAR_NODE;
         }
     |   _VARIABLE_NAME assign_series exp  {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -454,14 +460,14 @@ var_declaration:
             strcpy($$->complex_op.op1, $1);
             strcpy($$->complex_op.op2, $2->op_name);
             $$->complex_op.var_pos = 1;
-            $$->kind = DATA_ASSIGN_UNARY_NODE;
+            $$->kind = DATA_DECLARE_UNARY_NODE;
             $$->unary_child.child = $3;
         }
     |   var_declaration _COMMA_DIVIDED_CHAR var_declaration  {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = $1->exp_kind;
             strcpy($$->op_name, ",");
-            $$->kind = DATA_ASSIGN_BINARY_NODE;
+            $$->kind = DATA_DECLARE_BINARY_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
         }

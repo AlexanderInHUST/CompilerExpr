@@ -1,13 +1,13 @@
 LEX_FILE	= 	main.l
 BISON_FILE	=	main.y
-DISPLAY_FILE=	display.c
+DISPLAY_FILE=	display.c create_table.c symbol_table.c
 
 LEX_C_FILE	=	main.yy.c
 BISON_C_FILE=	main.tab.c
 
 EXE_FILE	=	compiler
 
-CFLAG		=	-I/usr/local/opt/flex/include -I./ -lfl -ly -std=c11
+CFLAG		=	-I/usr/local/opt/flex/include -I./ -lfl -ly -std=c11 -g
 LFLAG		=	-L/usr/local/opt/bison/lib -L/usr/local/opt/flex/lib
 
 wa:

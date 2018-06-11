@@ -519,6 +519,12 @@ char *yytext;
     #include "string.h"
     #include "node.h"
 
+    int yycolumn = 1;
+
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
+    yycolumn += yyleng;
+
     void printDetail(char *yytext, char *type);
 
     typedef union {
@@ -527,9 +533,9 @@ char *yytext;
         float float_value;
         tree_node * _tree_node;
     } YYLVAL;
-    #define YYSTYPE YYLVAL;
-#line 531 "main.yy.c"
-#line 532 "main.yy.c"
+
+#line 537 "main.yy.c"
+#line 538 "main.yy.c"
 
 #define INITIAL 0
 
@@ -746,13 +752,13 @@ YY_DECL
 		}
 
 	{
-#line 23 "main.l"
+#line 29 "main.l"
 
 
-#line 26 "main.l"
+#line 32 "main.l"
  /**********************/
 
-#line 755 "main.yy.c"
+#line 761 "main.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -821,7 +827,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 28 "main.l"
+#line 34 "main.l"
 {
     printDetail("DATA_DECLARE_NODE", yytext);
     return _INT_DECLARATION;
@@ -829,7 +835,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "main.l"
+#line 39 "main.l"
 {
     printDetail("DATA_DECLARE_NODE", yytext);
     return _FLOAT_RECLARATION;
@@ -837,7 +843,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 38 "main.l"
+#line 44 "main.l"
 {
     printDetail("DATA_DECLARE_NODE", yytext);
     return _CHAR_DECLARATION;
@@ -846,7 +852,7 @@ YY_RULE_SETUP
 /**********************/
 case 4:
 YY_RULE_SETUP
-#line 45 "main.l"
+#line 51 "main.l"
 {
     printDetail("CONDITION_NODE", yytext);
     return _IF_CONDITION;
@@ -854,7 +860,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 50 "main.l"
+#line 56 "main.l"
 {
     printDetail("CONDITION_NODE", yytext);
     return _WHILE_CONDITION;
@@ -862,7 +868,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 55 "main.l"
+#line 61 "main.l"
 {
     printDetail("CONDITION_NODE", yytext);
     return _ELSE_CONDITION;
@@ -871,7 +877,7 @@ YY_RULE_SETUP
 /**********************/
 case 7:
 YY_RULE_SETUP
-#line 62 "main.l"
+#line 68 "main.l"
 {
     strcpy(yylval.name_value, yytext);
     printDetail("VARIABLE_NODE", yytext);
@@ -880,7 +886,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 68 "main.l"
+#line 74 "main.l"
 {
     yylval.int_value = atoi(yytext);
     printDetail("CONST_INT_NODE", yytext);
@@ -889,7 +895,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 74 "main.l"
+#line 80 "main.l"
 {
     yylval.float_value = atof(yytext);
     printDetail("CONST_FLOAT_NODE", yytext);
@@ -898,7 +904,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 80 "main.l"
+#line 86 "main.l"
 {
     strcpy(yylval.name_value, yytext);
     printDetail("CONST_CHAR_NODE", yytext);
@@ -908,7 +914,7 @@ YY_RULE_SETUP
 /**********************/
 case 11:
 YY_RULE_SETUP
-#line 88 "main.l"
+#line 94 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _ASSIGN_UNARY_OP;
@@ -916,7 +922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 93 "main.l"
+#line 99 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _PLUS_OP;
@@ -924,7 +930,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 98 "main.l"
+#line 104 "main.l"
 {
     printDetail("MULTIPLE_OP_NODE", yytext);
     return _MINUS_OP;
@@ -932,7 +938,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 103 "main.l"
+#line 109 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _MULTIPLE_OP;
@@ -940,7 +946,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 108 "main.l"
+#line 114 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _DIVIDE_OP;
@@ -948,7 +954,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 113 "main.l"
+#line 119 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _MODULE_OP;
@@ -957,7 +963,7 @@ YY_RULE_SETUP
 /**********************/
 case 17:
 YY_RULE_SETUP
-#line 120 "main.l"
+#line 126 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _OR_OP;
@@ -965,7 +971,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 125 "main.l"
+#line 131 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _AND_OP;
@@ -973,7 +979,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 130 "main.l"
+#line 136 "main.l"
 {
     printDetail("UNARY_OP_NODE", yytext);
     return _NOT_OP;
@@ -982,7 +988,7 @@ YY_RULE_SETUP
 /**********************/
 case 20:
 YY_RULE_SETUP
-#line 137 "main.l"
+#line 143 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _PLUS_ASSIGN_OP;
@@ -990,7 +996,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 142 "main.l"
+#line 148 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _MINUS_ASSIGN_OP;
@@ -998,7 +1004,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 147 "main.l"
+#line 153 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _MULTI_ASSIGN_OP;
@@ -1006,7 +1012,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 152 "main.l"
+#line 158 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _DIVIDE_ASSIGN_OP;
@@ -1014,7 +1020,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 157 "main.l"
+#line 163 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _MODULE_ASSIGN_OP;
@@ -1023,7 +1029,7 @@ YY_RULE_SETUP
 /**********************/
 case 25:
 YY_RULE_SETUP
-#line 164 "main.l"
+#line 170 "main.l"
 {
     printDetail("UNARY_OP_NODE", yytext);
     return _SELF_PLUS_UNARY_OP;
@@ -1031,7 +1037,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 169 "main.l"
+#line 175 "main.l"
 {
     printDetail("UNARY_OP_NODE", yytext);
     return _SELF_MINUS_UNARY_OP;
@@ -1040,7 +1046,7 @@ YY_RULE_SETUP
 /**********************/
 case 27:
 YY_RULE_SETUP
-#line 176 "main.l"
+#line 182 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _LARGER_OP;
@@ -1048,7 +1054,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 181 "main.l"
+#line 187 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _LESS_OP;
@@ -1056,7 +1062,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 186 "main.l"
+#line 192 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _LARGER_EQUAL_OP;
@@ -1064,7 +1070,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 191 "main.l"
+#line 197 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _LESS_EQUAL_OP;
@@ -1072,7 +1078,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 196 "main.l"
+#line 202 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _NOT_EQUAL_OP;
@@ -1080,7 +1086,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 201 "main.l"
+#line 207 "main.l"
 {
     printDetail("BINARY_OP_NODE", yytext);
     return _EQUAL_OP;
@@ -1089,7 +1095,7 @@ YY_RULE_SETUP
 /**********************/
 case 33:
 YY_RULE_SETUP
-#line 208 "main.l"
+#line 214 "main.l"
 {
     printDetail("LEFT_BRACKET_NODE", yytext);
     return _LEFT_BRACKET;
@@ -1097,7 +1103,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 213 "main.l"
+#line 219 "main.l"
 {
     printDetail("RIGHT_BRACKET_NODE", yytext);
     return _RIGHT_BRACKET;
@@ -1105,7 +1111,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 218 "main.l"
+#line 224 "main.l"
 {
     printDetail("LEFT_BRACE_NODE", yytext);
     return _LEFT_BRACE;
@@ -1113,7 +1119,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 223 "main.l"
+#line 229 "main.l"
 {
     printDetail("RIGHT_BRACE_NODE", yytext);
     return _RIGHT_BRACE;
@@ -1122,7 +1128,7 @@ YY_RULE_SETUP
 /**********************/
 case 37:
 YY_RULE_SETUP
-#line 230 "main.l"
+#line 236 "main.l"
 {
     printDetail("DIVIDED_CHAR", yytext);
     return _END_DIVIDED_CHAR;
@@ -1130,7 +1136,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 235 "main.l"
+#line 241 "main.l"
 {
     printDetail("DIVIDED_CHAR", yytext);
     return _COMMA_DIVIDED_CHAR;
@@ -1139,7 +1145,7 @@ YY_RULE_SETUP
 /**********************/
 case 39:
 YY_RULE_SETUP
-#line 242 "main.l"
+#line 248 "main.l"
 {
     printDetail("COMMENT_LEFT_NODE", yytext);
     return _COMMENT_LEFT;
@@ -1147,7 +1153,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 247 "main.l"
+#line 253 "main.l"
 {
     printDetail("COMMENT_RIGHT_NODE", yytext);
     return _COMMENT_RIGHT;
@@ -1156,28 +1162,28 @@ YY_RULE_SETUP
 /**********************/
 case 41:
 YY_RULE_SETUP
-#line 254 "main.l"
+#line 260 "main.l"
 {;}
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 256 "main.l"
+#line 262 "main.l"
 {;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 259 "main.l"
+#line 265 "main.l"
 {
     printf("error in line %d\n", yylineno);
 }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 263 "main.l"
+#line 269 "main.l"
 ECHO;
 	YY_BREAK
-#line 1180 "main.yy.c"
+#line 1186 "main.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2194,7 +2200,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 263 "main.l"
+#line 269 "main.l"
 
 
 void printDetail(char *yytext, char *type) {

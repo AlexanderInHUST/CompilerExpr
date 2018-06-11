@@ -4,6 +4,12 @@
     #include "string.h"
     #include "node.h"
 
+    int yycolumn = 1;
+
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
+    yycolumn += yyleng;
+
     void printDetail(char *yytext, char *type);
 
     typedef union {
@@ -12,7 +18,7 @@
         float float_value;
         tree_node * _tree_node;
     } YYLVAL;
-    #define YYSTYPE YYLVAL;
+
 %}
 
 variable_name               [A-Za-z][A-Za-z0-9]*

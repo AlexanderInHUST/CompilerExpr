@@ -70,6 +70,7 @@
     #include "node.h"
     #include "symbol_table.h"
     #include "create_table.h"
+    #include "checker.h"
 
     extern char *yytext;
     extern FILE *yyin;
@@ -80,7 +81,7 @@
     enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2);
     
 
-#line 84 "main.tab.c" /* yacc.c:339  */
+#line 85 "main.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -168,7 +169,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 19 "main.y" /* yacc.c:355  */
+#line 20 "main.y" /* yacc.c:355  */
 
     int int_value;
     char name_value[32];
@@ -176,7 +177,7 @@ union YYSTYPE
     char char_value[32];
     struct tree_node * tree_node;
 
-#line 180 "main.tab.c" /* yacc.c:355  */
+#line 181 "main.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -184,16 +185,30 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 int yyparse (void);
 
 #endif /* !YY_YY_MAIN_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 197 "main.tab.c" /* yacc.c:358  */
+#line 212 "main.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -374,13 +389,15 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-         || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+         || (defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL \
+             && defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
   yytype_int16 yyss_alloc;
   YYSTYPE yyvs_alloc;
+  YYLTYPE yyls_alloc;
 };
 
 /* The size of the maximum gap between one aligned stack and the next.  */
@@ -389,8 +406,8 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
-      + YYSTACK_GAP_MAXIMUM)
+     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE) + sizeof (YYLTYPE)) \
+      + 2 * YYSTACK_GAP_MAXIMUM)
 
 # define YYCOPY_NEEDED 1
 
@@ -495,12 +512,12 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    57,    57,    66,    70,    78,    86,    94,   105,   114,
-     124,   136,   147,   157,   169,   184,   190,   196,   202,   211,
-     220,   229,   238,   249,   257,   265,   273,   281,   292,   300,
-     308,   316,   324,   332,   343,   351,   362,   373,   383,   391,
-     401,   406,   411,   416,   421,   426,   433,   438,   443,   451,
-     457,   466
+       0,    58,    58,    70,    74,    82,    90,    98,   109,   119,
+     130,   143,   155,   166,   174,   190,   197,   204,   211,   221,
+     231,   241,   251,   263,   272,   281,   290,   299,   311,   320,
+     329,   338,   347,   356,   368,   377,   389,   401,   412,   421,
+     432,   438,   444,   450,   456,   462,   470,   476,   482,   491,
+     498,   508
 };
 #endif
 
@@ -717,6 +734,32 @@ while (0)
 #define YYERRCODE       256
 
 
+/* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
+   If N is 0, then set CURRENT to the empty location which ends
+   the previous symbol: RHS[0] (always defined).  */
+
+#ifndef YYLLOC_DEFAULT
+# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
+    do                                                                  \
+      if (N)                                                            \
+        {                                                               \
+          (Current).first_line   = YYRHSLOC (Rhs, 1).first_line;        \
+          (Current).first_column = YYRHSLOC (Rhs, 1).first_column;      \
+          (Current).last_line    = YYRHSLOC (Rhs, N).last_line;         \
+          (Current).last_column  = YYRHSLOC (Rhs, N).last_column;       \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          (Current).first_line   = (Current).last_line   =              \
+            YYRHSLOC (Rhs, 0).last_line;                                \
+          (Current).first_column = (Current).last_column =              \
+            YYRHSLOC (Rhs, 0).last_column;                              \
+        }                                                               \
+    while (0)
+#endif
+
+#define YYRHSLOC(Rhs, K) ((Rhs)[K])
+
 
 /* Enable debugging if requested.  */
 #if YYDEBUG
@@ -732,9 +775,48 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-/* This macro is provided for backward compatibility. */
+
+/* YY_LOCATION_PRINT -- Print the location on the stream.
+   This macro was not mandated originally: define only if we know
+   we won't break user code: when these are the locations we know.  */
+
 #ifndef YY_LOCATION_PRINT
-# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+
+/* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
+
+YY_ATTRIBUTE_UNUSED
+static unsigned
+yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
+{
+  unsigned res = 0;
+  int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
+  if (0 <= yylocp->first_line)
+    {
+      res += YYFPRINTF (yyo, "%d", yylocp->first_line);
+      if (0 <= yylocp->first_column)
+        res += YYFPRINTF (yyo, ".%d", yylocp->first_column);
+    }
+  if (0 <= yylocp->last_line)
+    {
+      if (yylocp->first_line < yylocp->last_line)
+        {
+          res += YYFPRINTF (yyo, "-%d", yylocp->last_line);
+          if (0 <= end_col)
+            res += YYFPRINTF (yyo, ".%d", end_col);
+        }
+      else if (0 <= end_col && yylocp->first_column < end_col)
+        res += YYFPRINTF (yyo, "-%d", end_col);
+    }
+  return res;
+ }
+
+#  define YY_LOCATION_PRINT(File, Loc)          \
+  yy_location_print_ (File, &(Loc))
+
+# else
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 #endif
 
 
@@ -744,7 +826,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value); \
+                  Type, Value, Location); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -755,10 +837,11 @@ do {                                                                      \
 `----------------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
   FILE *yyo = yyoutput;
   YYUSE (yyo);
+  YYUSE (yylocationp);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
@@ -774,12 +857,14 @@ yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvalue
 `--------------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
   YYFPRINTF (yyoutput, "%s %s (",
              yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep);
+  YY_LOCATION_PRINT (yyoutput, *yylocationp);
+  YYFPRINTF (yyoutput, ": ");
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -812,7 +897,7 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, int yyrule)
+yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule)
 {
   unsigned long int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -826,7 +911,7 @@ yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, int yyrule)
       yy_symbol_print (stderr,
                        yystos[yyssp[yyi + 1 - yynrhs]],
                        &(yyvsp[(yyi + 1) - (yynrhs)])
-                                              );
+                       , &(yylsp[(yyi + 1) - (yynrhs)])                       );
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -834,7 +919,7 @@ yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, int yyrule)
 # define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule); \
+    yy_reduce_print (yyssp, yyvsp, yylsp, Rule); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1092,9 +1177,10 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
 {
   YYUSE (yyvaluep);
+  YYUSE (yylocationp);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
@@ -1112,6 +1198,12 @@ int yychar;
 
 /* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
+/* Location data for the lookahead symbol.  */
+YYLTYPE yylloc
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+  = { 1, 1, 1, 1 }
+# endif
+;
 /* Number of syntax errors so far.  */
 int yynerrs;
 
@@ -1130,6 +1222,7 @@ yyparse (void)
     /* The stacks and their tools:
        'yyss': related to states.
        'yyvs': related to semantic values.
+       'yyls': related to locations.
 
        Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
@@ -1144,6 +1237,14 @@ yyparse (void)
     YYSTYPE *yyvs;
     YYSTYPE *yyvsp;
 
+    /* The location stack.  */
+    YYLTYPE yylsa[YYINITDEPTH];
+    YYLTYPE *yyls;
+    YYLTYPE *yylsp;
+
+    /* The locations where the error started and ended.  */
+    YYLTYPE yyerror_range[3];
+
     YYSIZE_T yystacksize;
 
   int yyn;
@@ -1153,6 +1254,7 @@ yyparse (void)
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
+  YYLTYPE yyloc;
 
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
@@ -1161,7 +1263,7 @@ yyparse (void)
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-#define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
+#define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N), yylsp -= (N))
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
@@ -1169,6 +1271,7 @@ yyparse (void)
 
   yyssp = yyss = yyssa;
   yyvsp = yyvs = yyvsa;
+  yylsp = yyls = yylsa;
   yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
@@ -1177,6 +1280,7 @@ yyparse (void)
   yyerrstatus = 0;
   yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
+  yylsp[0] = yylloc;
   goto yysetstate;
 
 /*------------------------------------------------------------.
@@ -1202,6 +1306,7 @@ yyparse (void)
            memory.  */
         YYSTYPE *yyvs1 = yyvs;
         yytype_int16 *yyss1 = yyss;
+        YYLTYPE *yyls1 = yyls;
 
         /* Each stack pointer address is followed by the size of the
            data in use in that stack, in bytes.  This used to be a
@@ -1210,8 +1315,10 @@ yyparse (void)
         yyoverflow (YY_("memory exhausted"),
                     &yyss1, yysize * sizeof (*yyssp),
                     &yyvs1, yysize * sizeof (*yyvsp),
+                    &yyls1, yysize * sizeof (*yylsp),
                     &yystacksize);
 
+        yyls = yyls1;
         yyss = yyss1;
         yyvs = yyvs1;
       }
@@ -1234,6 +1341,7 @@ yyparse (void)
           goto yyexhaustedlab;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
+        YYSTACK_RELOCATE (yyls_alloc, yyls);
 #  undef YYSTACK_RELOCATE
         if (yyss1 != yyssa)
           YYSTACK_FREE (yyss1);
@@ -1243,6 +1351,7 @@ yyparse (void)
 
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
+      yylsp = yyls + yysize - 1;
 
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
                   (unsigned long int) yystacksize));
@@ -1320,7 +1429,7 @@ yybackup:
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   *++yyvsp = yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
-
+  *++yylsp = yylloc;
   goto yynewstate;
 
 
@@ -1351,33 +1460,37 @@ yyreduce:
      GCC warning that YYVAL may be used uninitialized.  */
   yyval = yyvsp[1-yylen];
 
-
+  /* Default location.  */
+  YYLLOC_DEFAULT (yyloc, (yylsp - yylen), yylen);
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
         case 2:
-#line 57 "main.y" /* yacc.c:1661  */
+#line 58 "main.y" /* yacc.c:1661  */
     {
             display((yyvsp[0].tree_node), 0);
             symbol_table * root = create_symbol_table();
-            create_tables(root, 0, (yyvsp[0].tree_node), -1);
+            check_results_array * checks = create_check_results_array();
+            create_tables(root, 0, (yyvsp[0].tree_node), -1, checks);
             print_table(root, "", 1);
+            print_check_results_array(checks);
             free_symbol_table(root, 0);
+            free_check_results_array(&checks);
         }
-#line 1368 "main.tab.c" /* yacc.c:1661  */
+#line 1481 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 3:
-#line 66 "main.y" /* yacc.c:1661  */
+#line 70 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->kind = BLANK_NODE;
         }
-#line 1377 "main.tab.c" /* yacc.c:1661  */
+#line 1490 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 70 "main.y" /* yacc.c:1661  */
+#line 74 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;
@@ -1386,11 +1499,11 @@ yyreduce:
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-1].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
         }
-#line 1390 "main.tab.c" /* yacc.c:1661  */
+#line 1503 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 78 "main.y" /* yacc.c:1661  */
+#line 82 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;
@@ -1399,11 +1512,11 @@ yyreduce:
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-1].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
         }
-#line 1403 "main.tab.c" /* yacc.c:1661  */
+#line 1516 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 86 "main.y" /* yacc.c:1661  */
+#line 90 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;
@@ -1412,11 +1525,11 @@ yyreduce:
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-1].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
         }
-#line 1416 "main.tab.c" /* yacc.c:1661  */
+#line 1529 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 7:
-#line 94 "main.y" /* yacc.c:1661  */
+#line 98 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;
@@ -1425,11 +1538,11 @@ yyreduce:
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[-1].tree_node);
         }
-#line 1429 "main.tab.c" /* yacc.c:1661  */
+#line 1542 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 8:
-#line 105 "main.y" /* yacc.c:1661  */
+#line 109 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "if");
@@ -1437,12 +1550,13 @@ yyreduce:
             (yyval.tree_node)->kind = IF_CONDITION_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-4]).first_line;
         }
-#line 1442 "main.tab.c" /* yacc.c:1661  */
+#line 1556 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 9:
-#line 114 "main.y" /* yacc.c:1661  */
+#line 119 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "if-else");
@@ -1451,12 +1565,13 @@ yyreduce:
             (yyval.tree_node)->trinary_children.first_child = (yyvsp[-4].tree_node);
             (yyval.tree_node)->trinary_children.second_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->trinary_children.third_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-6]).first_line;
         }
-#line 1456 "main.tab.c" /* yacc.c:1661  */
+#line 1571 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 10:
-#line 124 "main.y" /* yacc.c:1661  */
+#line 130 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "if-else");
@@ -1465,12 +1580,13 @@ yyreduce:
             (yyval.tree_node)->trinary_children.first_child = (yyvsp[-4].tree_node);
             (yyval.tree_node)->trinary_children.second_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->trinary_children.third_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-6]).first_line;
         }
-#line 1470 "main.tab.c" /* yacc.c:1661  */
+#line 1586 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 11:
-#line 136 "main.y" /* yacc.c:1661  */
+#line 143 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "while");
@@ -1478,41 +1594,39 @@ yyreduce:
             (yyval.tree_node)->kind = WHILE_CONDITION_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-4]).first_line;
         }
-#line 1483 "main.tab.c" /* yacc.c:1661  */
+#line 1600 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 12:
-#line 147 "main.y" /* yacc.c:1661  */
+#line 155 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;
             strcpy((yyval.tree_node)->op_name, "block");
             (yyval.tree_node)->kind = BLOCK_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[-1].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1495 "main.tab.c" /* yacc.c:1661  */
+#line 1613 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 13:
-#line 157 "main.y" /* yacc.c:1661  */
+#line 166 "main.y" /* yacc.c:1661  */
     {
-            if (((yyvsp[-1].tree_node)->exp_kind != (yyvsp[0].tree_node)->exp_kind) && (yyvsp[0].tree_node)->exp_kind != NOT_EXP) {
-                yyerror("value fit error");
-                exit(0);
-            } else {
-                (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
-                (yyval.tree_node)->exp_kind = (yyvsp[-1].tree_node)->exp_kind;
-                strcpy((yyval.tree_node)->op_name, (yyvsp[-1].tree_node)->op_name);
-                (yyval.tree_node)->kind = DATA_DECLARE_NODE;
-                (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
-            }
+            (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
+            (yyval.tree_node)->exp_kind = (yyvsp[-1].tree_node)->exp_kind;
+            strcpy((yyval.tree_node)->op_name, (yyvsp[-1].tree_node)->op_name);
+            (yyval.tree_node)->kind = DATA_DECLARE_NODE;
+            (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1512 "main.tab.c" /* yacc.c:1661  */
+#line 1626 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 14:
-#line 169 "main.y" /* yacc.c:1661  */
+#line 174 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[0].tree_node)->exp_kind;
@@ -1521,56 +1635,61 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 1;
             (yyval.tree_node)->kind = DATA_ASSIGN_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-2]).first_line;
         }
-#line 1526 "main.tab.c" /* yacc.c:1661  */
+#line 1641 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 15:
-#line 184 "main.y" /* yacc.c:1661  */
+#line 190 "main.y" /* yacc.c:1661  */
     {         
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->kind = VARIABLE_NODE;
             (yyval.tree_node)->exp_kind = NOT_EXP;         // fix me
             strcpy((yyval.tree_node)->variable_name, (yyvsp[0].name_value));
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1537 "main.tab.c" /* yacc.c:1661  */
+#line 1653 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 16:
-#line 190 "main.y" /* yacc.c:1661  */
+#line 197 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->kind = CONST_INT_NODE;
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
             (yyval.tree_node)->int_value = (yyvsp[0].int_value);
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1548 "main.tab.c" /* yacc.c:1661  */
+#line 1665 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 17:
-#line 196 "main.y" /* yacc.c:1661  */
+#line 204 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->kind = CONST_FLOAT_NODE;
             (yyval.tree_node)->exp_kind = FLOAT_EXP;
             (yyval.tree_node)->float_value = (yyvsp[0].float_value);
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1559 "main.tab.c" /* yacc.c:1661  */
+#line 1677 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 18:
-#line 202 "main.y" /* yacc.c:1661  */
+#line 211 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->kind = CONST_CHAR_NODE;
             (yyval.tree_node)->exp_kind = CHAR_EXP;
             (yyval.tree_node)->char_value = (yyvsp[0].char_value)[1];
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1570 "main.tab.c" /* yacc.c:1661  */
+#line 1689 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 19:
-#line 211 "main.y" /* yacc.c:1661  */
+#line 221 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->complex_op.op1, (yyvsp[-1].name_value));
@@ -1578,12 +1697,13 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 1;
             (yyval.tree_node)->exp_kind = INTEGER_EXP;     // fix me
             (yyval.tree_node)->kind = UNARY_OP_NODE;
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1583 "main.tab.c" /* yacc.c:1661  */
+#line 1703 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 20:
-#line 220 "main.y" /* yacc.c:1661  */
+#line 231 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->complex_op.op1, (yyvsp[-1].name_value));
@@ -1591,12 +1711,13 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 1;
             (yyval.tree_node)->exp_kind = INTEGER_EXP;     // fix me
             (yyval.tree_node)->kind = UNARY_OP_NODE;
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1596 "main.tab.c" /* yacc.c:1661  */
+#line 1717 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 21:
-#line 229 "main.y" /* yacc.c:1661  */
+#line 241 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->complex_op.op1, "++");
@@ -1604,12 +1725,13 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 2;
             (yyval.tree_node)->exp_kind = INTEGER_EXP;     // fix me
             (yyval.tree_node)->kind = UNARY_OP_NODE;
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1609 "main.tab.c" /* yacc.c:1661  */
+#line 1731 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 22:
-#line 238 "main.y" /* yacc.c:1661  */
+#line 251 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->complex_op.op1, "--");
@@ -1617,12 +1739,13 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 2;
             (yyval.tree_node)->exp_kind = INTEGER_EXP;     // fix me
             (yyval.tree_node)->kind = UNARY_OP_NODE;
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1622 "main.tab.c" /* yacc.c:1661  */
+#line 1745 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 23:
-#line 249 "main.y" /* yacc.c:1661  */
+#line 263 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
@@ -1630,12 +1753,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1635 "main.tab.c" /* yacc.c:1661  */
+#line 1759 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 24:
-#line 257 "main.y" /* yacc.c:1661  */
+#line 272 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
@@ -1643,12 +1767,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1648 "main.tab.c" /* yacc.c:1661  */
+#line 1773 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 25:
-#line 265 "main.y" /* yacc.c:1661  */
+#line 281 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
@@ -1656,12 +1781,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1661 "main.tab.c" /* yacc.c:1661  */
+#line 1787 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 26:
-#line 273 "main.y" /* yacc.c:1661  */
+#line 290 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
@@ -1669,12 +1795,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1674 "main.tab.c" /* yacc.c:1661  */
+#line 1801 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 27:
-#line 281 "main.y" /* yacc.c:1661  */
+#line 299 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-2].tree_node), (yyvsp[0].tree_node));
@@ -1682,12 +1809,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1687 "main.tab.c" /* yacc.c:1661  */
+#line 1815 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 28:
-#line 292 "main.y" /* yacc.c:1661  */
+#line 311 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1695,12 +1823,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1700 "main.tab.c" /* yacc.c:1661  */
+#line 1829 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 29:
-#line 300 "main.y" /* yacc.c:1661  */
+#line 320 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1708,12 +1837,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1713 "main.tab.c" /* yacc.c:1661  */
+#line 1843 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 30:
-#line 308 "main.y" /* yacc.c:1661  */
+#line 329 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1721,12 +1851,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1726 "main.tab.c" /* yacc.c:1661  */
+#line 1857 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 31:
-#line 316 "main.y" /* yacc.c:1661  */
+#line 338 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1734,12 +1865,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1739 "main.tab.c" /* yacc.c:1661  */
+#line 1871 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 32:
-#line 324 "main.y" /* yacc.c:1661  */
+#line 347 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1747,12 +1879,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1752 "main.tab.c" /* yacc.c:1661  */
+#line 1885 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 33:
-#line 332 "main.y" /* yacc.c:1661  */
+#line 356 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1760,12 +1893,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1765 "main.tab.c" /* yacc.c:1661  */
+#line 1899 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 34:
-#line 343 "main.y" /* yacc.c:1661  */
+#line 368 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1773,12 +1907,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1778 "main.tab.c" /* yacc.c:1661  */
+#line 1913 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 35:
-#line 351 "main.y" /* yacc.c:1661  */
+#line 377 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
@@ -1786,12 +1921,13 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
     }
-#line 1791 "main.tab.c" /* yacc.c:1661  */
+#line 1927 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 36:
-#line 362 "main.y" /* yacc.c:1661  */
+#line 389 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = get_exp_kind((yyvsp[-3].tree_node), (yyvsp[-1].tree_node));
@@ -1799,143 +1935,157 @@ yyreduce:
             (yyval.tree_node)->kind = BINARY_OP_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-3].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[-1].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-3]).first_line;
         }
-#line 1804 "main.tab.c" /* yacc.c:1661  */
+#line 1941 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 37:
-#line 373 "main.y" /* yacc.c:1661  */
+#line 401 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[-1].tree_node)->exp_kind;
             strcpy((yyval.tree_node)->op_name, "()");
             (yyval.tree_node)->kind = S_UNARY_OP_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[-1].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1816 "main.tab.c" /* yacc.c:1661  */
+#line 1954 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 38:
-#line 383 "main.y" /* yacc.c:1661  */
+#line 412 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[0].tree_node)->exp_kind;
             strcpy((yyval.tree_node)->op_name, "-");
             (yyval.tree_node)->kind = S_UNARY_OP_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1828 "main.tab.c" /* yacc.c:1661  */
+#line 1967 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 39:
-#line 391 "main.y" /* yacc.c:1661  */
+#line 421 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[0].tree_node)->exp_kind;
             strcpy((yyval.tree_node)->op_name, "!");
             (yyval.tree_node)->kind = S_UNARY_OP_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-1]).first_line;
         }
-#line 1840 "main.tab.c" /* yacc.c:1661  */
+#line 1980 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 40:
-#line 401 "main.y" /* yacc.c:1661  */
+#line 432 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1849 "main.tab.c" /* yacc.c:1661  */
+#line 1990 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 41:
-#line 406 "main.y" /* yacc.c:1661  */
+#line 438 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "+=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1858 "main.tab.c" /* yacc.c:1661  */
+#line 2000 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 42:
-#line 411 "main.y" /* yacc.c:1661  */
+#line 444 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "-=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1867 "main.tab.c" /* yacc.c:1661  */
+#line 2010 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 43:
-#line 416 "main.y" /* yacc.c:1661  */
+#line 450 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "*=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1876 "main.tab.c" /* yacc.c:1661  */
+#line 2020 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 44:
-#line 421 "main.y" /* yacc.c:1661  */
+#line 456 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "/=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1885 "main.tab.c" /* yacc.c:1661  */
+#line 2030 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 45:
-#line 426 "main.y" /* yacc.c:1661  */
+#line 462 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             strcpy((yyval.tree_node)->op_name, "%=");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1894 "main.tab.c" /* yacc.c:1661  */
+#line 2040 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 46:
-#line 433 "main.y" /* yacc.c:1661  */
+#line 470 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = INTEGER_EXP;
             strcpy((yyval.tree_node)->op_name, "int");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1904 "main.tab.c" /* yacc.c:1661  */
+#line 2051 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 47:
-#line 438 "main.y" /* yacc.c:1661  */
+#line 476 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = CHAR_EXP;
             strcpy((yyval.tree_node)->op_name, "char");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1914 "main.tab.c" /* yacc.c:1661  */
+#line 2062 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 48:
-#line 443 "main.y" /* yacc.c:1661  */
+#line 482 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = FLOAT_EXP;
             strcpy((yyval.tree_node)->op_name, "float");
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1924 "main.tab.c" /* yacc.c:1661  */
+#line 2073 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 49:
-#line 451 "main.y" /* yacc.c:1661  */
+#line 491 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = NOT_EXP;        // fix me  
             strcpy((yyval.tree_node)->variable_name, (yyvsp[0].name_value));
             (yyval.tree_node)->kind = DATA_DECLARE_VAR_NODE;
+            (yyval.tree_node)->line_number = (yylsp[0]).first_line;
         }
-#line 1935 "main.tab.c" /* yacc.c:1661  */
+#line 2085 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 50:
-#line 457 "main.y" /* yacc.c:1661  */
+#line 498 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[0].tree_node)->exp_kind;
@@ -1944,12 +2094,13 @@ yyreduce:
             (yyval.tree_node)->complex_op.var_pos = 1;
             (yyval.tree_node)->kind = DATA_DECLARE_UNARY_NODE;
             (yyval.tree_node)->unary_child.child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-2]).first_line;
         }
-#line 1949 "main.tab.c" /* yacc.c:1661  */
+#line 2100 "main.tab.c" /* yacc.c:1661  */
     break;
 
   case 51:
-#line 466 "main.y" /* yacc.c:1661  */
+#line 508 "main.y" /* yacc.c:1661  */
     {
             (yyval.tree_node) = (tree_node *) malloc (sizeof(tree_node));
             (yyval.tree_node)->exp_kind = (yyvsp[-2].tree_node)->exp_kind;
@@ -1957,12 +2108,13 @@ yyreduce:
             (yyval.tree_node)->kind = DATA_DECLARE_BINARY_NODE;
             (yyval.tree_node)->binary_children.left_child = (yyvsp[-2].tree_node);
             (yyval.tree_node)->binary_children.right_child = (yyvsp[0].tree_node);
+            (yyval.tree_node)->line_number = (yylsp[-2]).first_line;
         }
-#line 1962 "main.tab.c" /* yacc.c:1661  */
+#line 2114 "main.tab.c" /* yacc.c:1661  */
     break;
 
 
-#line 1966 "main.tab.c" /* yacc.c:1661  */
+#line 2118 "main.tab.c" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1983,6 +2135,7 @@ yyreduce:
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
+  *++yylsp = yyloc;
 
   /* Now 'shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
@@ -2047,7 +2200,7 @@ yyerrlab:
 #endif
     }
 
-
+  yyerror_range[1] = yylloc;
 
   if (yyerrstatus == 3)
     {
@@ -2063,7 +2216,7 @@ yyerrlab:
       else
         {
           yydestruct ("Error: discarding",
-                      yytoken, &yylval);
+                      yytoken, &yylval, &yylloc);
           yychar = YYEMPTY;
         }
     }
@@ -2084,6 +2237,7 @@ yyerrorlab:
   if (/*CONSTCOND*/ 0)
      goto yyerrorlab;
 
+  yyerror_range[1] = yylsp[1-yylen];
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
   YYPOPSTACK (yylen);
@@ -2117,9 +2271,9 @@ yyerrlab1:
       if (yyssp == yyss)
         YYABORT;
 
-
+      yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
-                  yystos[yystate], yyvsp);
+                  yystos[yystate], yyvsp, yylsp);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -2129,6 +2283,11 @@ yyerrlab1:
   *++yyvsp = yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
+  yyerror_range[2] = yylloc;
+  /* Using YYLLOC is tempting, but would change the location of
+     the lookahead.  YYLOC is available though.  */
+  YYLLOC_DEFAULT (yyloc, yyerror_range, 2);
+  *++yylsp = yyloc;
 
   /* Shift the error token.  */
   YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
@@ -2168,7 +2327,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval);
+                  yytoken, &yylval, &yylloc);
     }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
@@ -2177,7 +2336,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  yystos[*yyssp], yyvsp);
+                  yystos[*yyssp], yyvsp, yylsp);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -2190,7 +2349,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 476 "main.y" /* yacc.c:1906  */
+#line 519 "main.y" /* yacc.c:1906  */
 
 
 int main(int argc, char *argv[]){
@@ -2200,16 +2359,4 @@ int main(int argc, char *argv[]){
     }
 	yyparse();
 	return 0;
-}
-
-enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2) {
-    if (e1->exp_kind == FLOAT_EXP || e2->exp_kind == FLOAT_EXP) {
-        return FLOAT_EXP;
-    } else if (e1->exp_kind == CHAR_EXP && e2->exp_kind == CHAR_EXP) {
-        return CHAR_EXP;
-    } else if (e1->exp_kind == NOT_EXP && e2->exp_kind == NOT_EXP) {
-        return NOT_EXP;
-    } else {
-        return INTEGER_EXP;
-    }
 }

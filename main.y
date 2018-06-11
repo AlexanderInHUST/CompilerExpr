@@ -5,6 +5,7 @@
     #include "node.h"
     #include "symbol_table.h"
     #include "create_table.h"
+    #include "checker.h"
 
     extern char *yytext;
     extern FILE *yyin;
@@ -57,9 +58,12 @@ input:
         code {
             display($1, 0);
             symbol_table * root = create_symbol_table();
-            create_tables(root, 0, $1, -1);
+            check_results_array * checks = create_check_results_array();
+            create_tables(root, 0, $1, -1, checks);
             print_table(root, "", 1);
+            print_check_results_array(checks);
             free_symbol_table(root, 0);
+            free_check_results_array(&checks);
         }
     ;
 
@@ -109,6 +113,7 @@ if_conditions:
             $$->kind = IF_CONDITION_NODE;
             $$->binary_children.left_child = $3;
             $$->binary_children.right_child = $5;
+            $$->line_number = @1.first_line;
         }
     
     |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION block {
@@ -119,6 +124,7 @@ if_conditions:
             $$->trinary_children.first_child = $3;
             $$->trinary_children.second_child = $5;
             $$->trinary_children.third_child = $7;
+            $$->line_number = @1.first_line;
         }
     
     |   _IF_CONDITION _LEFT_BRACKET exp _RIGHT_BRACKET block _ELSE_CONDITION if_conditions {
@@ -129,6 +135,7 @@ if_conditions:
             $$->trinary_children.first_child = $3;
             $$->trinary_children.second_child = $5;
             $$->trinary_children.third_child = $7;
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -140,6 +147,7 @@ while_conditions:
             $$->kind = WHILE_CONDITION_NODE;
             $$->binary_children.left_child = $3;
             $$->binary_children.right_child = $5;
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -150,21 +158,18 @@ block:
             strcpy($$->op_name, "block");
             $$->kind = BLOCK_NODE;
             $$->unary_child.child = $2;
+            $$->line_number = @2.first_line;
         }
     ;
 
 sentence:
         declaration_series var_declaration {
-            if (($1->exp_kind != $2->exp_kind) && $2->exp_kind != NOT_EXP) {
-                yyerror("value fit error");
-                exit(0);
-            } else {
-                $$ = (tree_node *) malloc (sizeof(tree_node));
-                $$->exp_kind = $1->exp_kind;
-                strcpy($$->op_name, $1->op_name);
-                $$->kind = DATA_DECLARE_NODE;
-                $$->unary_child.child = $2;
-            }
+            $$ = (tree_node *) malloc (sizeof(tree_node));
+            $$->exp_kind = $1->exp_kind;
+            strcpy($$->op_name, $1->op_name);
+            $$->kind = DATA_DECLARE_NODE;
+            $$->unary_child.child = $2;
+            $$->line_number = @1.first_line;
         }
     |   _VARIABLE_NAME assign_series exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -174,6 +179,7 @@ sentence:
             $$->complex_op.var_pos = 1;
             $$->kind = DATA_ASSIGN_NODE;
             $$->unary_child.child = $3;
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -186,24 +192,28 @@ exp:
             $$->kind = VARIABLE_NODE;
             $$->exp_kind = NOT_EXP;         // fix me
             strcpy($$->variable_name, $1);
+            $$->line_number = @1.first_line;
         }
     |   _INTEGER_VALUE {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->kind = CONST_INT_NODE;
             $$->exp_kind = INTEGER_EXP;
             $$->int_value = $1;
+            $$->line_number = @1.first_line;
         }
     |   _FLOAT_VALUE {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->kind = CONST_FLOAT_NODE;
             $$->exp_kind = FLOAT_EXP;
             $$->float_value = $1;
+            $$->line_number = @1.first_line;
         }
     |   _CHAR_VALUE {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->kind = CONST_CHAR_NODE;
             $$->exp_kind = CHAR_EXP;
             $$->char_value = $1[1];
+            $$->line_number = @1.first_line;
         }
 
     /********************************************************/
@@ -215,6 +225,7 @@ exp:
             $$->complex_op.var_pos = 1;
             $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
+            $$->line_number = @1.first_line;
         }
 
     |   _VARIABLE_NAME _RIGHT_SELF_MINUS_UNARY_OP %prec _RIGHT_SELF_MINUS_UNARY_OP {
@@ -224,6 +235,7 @@ exp:
             $$->complex_op.var_pos = 1;
             $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
+            $$->line_number = @1.first_line;
         }
 
     |   _LEFT_SELF_PLUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_PLUS_UNARY_OP {
@@ -233,6 +245,7 @@ exp:
             $$->complex_op.var_pos = 2;
             $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
+            $$->line_number = @1.first_line;
         }
 
     |   _LEFT_SELF_MINUS_UNARY_OP _VARIABLE_NAME %prec _LEFT_SELF_MINUS_UNARY_OP {
@@ -242,6 +255,7 @@ exp:
             $$->complex_op.var_pos = 2;
             $$->exp_kind = INTEGER_EXP;     // fix me
             $$->kind = UNARY_OP_NODE;
+            $$->line_number = @1.first_line;
         }
 
     /********************************************************/
@@ -253,6 +267,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _MINUS_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -261,6 +276,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _MULTIPLE_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -269,6 +285,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _DIVIDE_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -277,6 +294,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _MODULE_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -285,6 +303,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
 
     /**************************/
@@ -296,6 +315,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _LESS_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -304,6 +324,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _LARGER_EQUAL_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -312,6 +333,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _LESS_EQUAL_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -320,6 +342,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _EQUAL_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -328,6 +351,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _NOT_EQUAL_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -336,6 +360,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
         
     /**************************/
@@ -347,6 +372,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
         }
     |   exp _AND_OP exp {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -355,6 +381,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @2.first_line;
     }
 
     /**************************/
@@ -366,6 +393,7 @@ exp:
             $$->kind = BINARY_OP_NODE;
             $$->binary_children.left_child = $2;
             $$->binary_children.right_child = $4;
+            $$->line_number = @2.first_line;
         }
 
     /********************************************************/
@@ -376,6 +404,7 @@ exp:
             strcpy($$->op_name, "()");
             $$->kind = S_UNARY_OP_NODE;
             $$->unary_child.child = $2;
+            $$->line_number = @2.first_line;
         }
 
     /********************************************************/
@@ -386,6 +415,7 @@ exp:
             strcpy($$->op_name, "-");
             $$->kind = S_UNARY_OP_NODE;
             $$->unary_child.child = $2;
+            $$->line_number = @1.first_line;
         }
 
     |   _NOT_OP exp {
@@ -394,6 +424,7 @@ exp:
             strcpy($$->op_name, "!");
             $$->kind = S_UNARY_OP_NODE;
             $$->unary_child.child = $2;
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -401,31 +432,37 @@ assign_series:
         _ASSIGN_UNARY_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "=");
+            $$->line_number = @1.first_line;
         }
 
     |   _PLUS_ASSIGN_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "+=");
+            $$->line_number = @1.first_line;
         }
 
     |   _MINUS_ASSIGN_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "-=");
+            $$->line_number = @1.first_line;
         }
 
     |   _MULTI_ASSIGN_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "*=");
+            $$->line_number = @1.first_line;
         }
 
     |   _DIVIDE_ASSIGN_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "/=");
+            $$->line_number = @1.first_line;
         }
 
     |   _MODULE_ASSIGN_OP {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             strcpy($$->op_name, "%=");
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -434,16 +471,19 @@ declaration_series:
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = INTEGER_EXP;
             strcpy($$->op_name, "int");
+            $$->line_number = @1.first_line;
         }
     |   _CHAR_DECLARATION {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = CHAR_EXP;
             strcpy($$->op_name, "char");
+            $$->line_number = @1.first_line;
         }
     |   _FLOAT_RECLARATION {
             $$ = (tree_node *) malloc (sizeof(tree_node));
             $$->exp_kind = FLOAT_EXP;
             strcpy($$->op_name, "float");
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -453,6 +493,7 @@ var_declaration:
             $$->exp_kind = NOT_EXP;        // fix me  
             strcpy($$->variable_name, $1);
             $$->kind = DATA_DECLARE_VAR_NODE;
+            $$->line_number = @1.first_line;
         }
     |   _VARIABLE_NAME assign_series exp  {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -462,6 +503,7 @@ var_declaration:
             $$->complex_op.var_pos = 1;
             $$->kind = DATA_DECLARE_UNARY_NODE;
             $$->unary_child.child = $3;
+            $$->line_number = @1.first_line;
         }
     |   var_declaration _COMMA_DIVIDED_CHAR var_declaration  {
             $$ = (tree_node *) malloc (sizeof(tree_node));
@@ -470,6 +512,7 @@ var_declaration:
             $$->kind = DATA_DECLARE_BINARY_NODE;
             $$->binary_children.left_child = $1;
             $$->binary_children.right_child = $3;
+            $$->line_number = @1.first_line;
         }
     ;
 
@@ -482,16 +525,4 @@ int main(int argc, char *argv[]){
     }
 	yyparse();
 	return 0;
-}
-
-enum exp_kind get_exp_kind (struct tree_node * e1, struct tree_node * e2) {
-    if (e1->exp_kind == FLOAT_EXP || e2->exp_kind == FLOAT_EXP) {
-        return FLOAT_EXP;
-    } else if (e1->exp_kind == CHAR_EXP && e2->exp_kind == CHAR_EXP) {
-        return CHAR_EXP;
-    } else if (e1->exp_kind == NOT_EXP && e2->exp_kind == NOT_EXP) {
-        return NOT_EXP;
-    } else {
-        return INTEGER_EXP;
-    }
 }

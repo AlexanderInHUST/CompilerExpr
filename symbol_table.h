@@ -32,13 +32,13 @@ symbol_table * create_symbol_table();
 symbol_table * copy_create_symbol_table(symbol_table *);
 
 void free_symbol_table(symbol_table * table, int b);
-void add_next_symbol_table(symbol_table * src, symbol_table ** next);
+void add_next_symbol_table(symbol_table * src, symbol_table * next);
 
 int find_node(symbol_table * table, char * node_name);
 void insert_edit_node(symbol_table * table, char * node_name, int exp_kind, int field_level);
 void resize_table(symbol_table * table, int len);
 void resize_next_tables(symbol_table * table, int len);
-int get_node_kind(symbol_table * table, char * node_name);
+symbol_node * get_node(symbol_table * table, char * node_name);
 void print_table(symbol_table * table, char * header, int pos);
 
 #endif

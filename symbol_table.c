@@ -37,9 +37,9 @@ void free_symbol_table(symbol_table * table, int b) {
     free(table->next_tables);
 };
 
-void add_next_symbol_table(symbol_table * src, symbol_table ** next) {
+void add_next_symbol_table(symbol_table * src, symbol_table * next) {
     resize_next_tables(src, src->next_len + 1);
-    src->next_tables[src->next_len] = *next;
+    src->next_tables[src->next_len] = next;
     src->next_len++;
 }
 
@@ -54,9 +54,9 @@ int find_node(symbol_table * table, char * node_name) {
     return NOT_EX;
 }
 
-int get_node_kind(symbol_table * table, char * node_name) {
+symbol_node * get_node(symbol_table * table, char * node_name) {
     int pos = find_node(table, node_name);
-    return (pos == NOT_EX) ? NOT_EX : table->nodes[pos].exp_kind;
+    return (pos == NOT_EX) ? NULL : &table->nodes[pos];
 }
 
 void insert_edit_node(symbol_table * table, char * node_name, int exp_kind, int field_level) {

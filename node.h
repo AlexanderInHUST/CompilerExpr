@@ -37,7 +37,7 @@ enum exp_kind {
 typedef struct tree_node {
 	enum node_kind kind;
     enum exp_kind exp_kind;
-    int field_level;
+    int line_number;
 	union {
 		char variable_name[32];        
         int int_value;

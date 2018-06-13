@@ -169,6 +169,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             TAC * label_tac = create_TAC(T->label, "", "", "");
             insert_TAC(T->codes, label_tac);
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
+            append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
             TAC * jmp_tac = create_TAC("je", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
@@ -186,6 +187,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             make_up_TACs(T->binary_children.right_child, table, stack);
             strcpy(T->false_label, create_new_label());            
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
+            append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
             TAC * jmp_tac = create_TAC("je", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
@@ -197,9 +199,13 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
 		case IF_ELSE_CONDITION_NODE: {
             T->codes = create_TAC_list();
             T->side_effect = create_TAC_list();
+            make_up_TACs(T->trinary_children.first_child, table, stack);
+            make_up_TACs(T->trinary_children.second_child, table, stack);
+            make_up_TACs(T->trinary_children.third_child, table, stack);
             strcpy(T->label, create_new_label());
             strcpy(T->false_label, create_new_label());          
-            append_TAC_list(T->codes, T->trinary_children.first_child->codes);            
+            append_TAC_list(T->codes, T->trinary_children.first_child->codes); 
+            append_TAC_list(T->codes, T->trinary_children.first_child->side_effect);           
             TAC * jmp_tac = create_TAC("je", "0", T->trinary_children.first_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->trinary_children.second_child->codes);
@@ -208,7 +214,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             TAC * false_lab_tac = create_TAC(T->false_label, "", "", "");
             insert_TAC(T->codes, false_lab_tac);
             append_TAC_list(T->codes, T->trinary_children.third_child->codes);
-            TAC * dst_tac = create_TAC(T->false_label, "", "", "");
+            TAC * dst_tac = create_TAC(T->label, "", "", "");
             insert_TAC(T->codes, dst_tac);
 			break;
 		}

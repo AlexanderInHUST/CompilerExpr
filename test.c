@@ -8,4 +8,9 @@ if (a == b + c) {
     while (sssss == 4) {
         e = b + qw;
     }
+} else if (b == 3) {
+    if (a == 4) {
+        e = 2 + a;
+    }
+    b = 3.90f;
 }

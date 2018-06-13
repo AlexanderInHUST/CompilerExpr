@@ -6,6 +6,8 @@
     #include "symbol_table.h"
     #include "create_table.h"
     #include "checker.h"
+    #include "TAC_generator.h"
+    #include "TAC.h"
 
     extern char *yytext;
     extern FILE *yyin;
@@ -59,9 +61,12 @@ input:
             display($1, 0);
             symbol_table * root = create_symbol_table();
             check_results_array * checks = create_check_results_array();
+            count_stack * stack = create_count_stack();
             create_tables(root, 0, $1, -1, checks);
-            print_table(root, "", 1);
             print_check_results_array(checks);
+            make_up_TACs($1, root, stack);
+            print_table(root, "", 1);
+            print_TAC_list($1->codes);
             free_symbol_table(root, 0);
             free_check_results_array(&checks);
         }

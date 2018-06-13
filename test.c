@@ -1,24 +1,11 @@
 float b, c = 0, e = 5 + a++ / 2.5f;
-if (a == b + 3) {
-    int a = 0 + (3 * 7); 
-    char ss = a + '2';
-    char a = 3;
-    while (a == 4) {
-        char a = '3';
-        char qw = '4';
-    }
-    if (b == 2) {
-        float a = 4.0f;
-        float g = 3.3f + 4;
-        {
-            int a = 0;
-            if (a == 3) {
-                int d = 3;
-            }
-        }
-    } else if (c == 3) {
-        float b = 4.0f;
-        float c = 3.3f;
-    }
+while (a == 4) {
+    char a = '3';
+    char qw = '4';
 }
 char ss;
+if (a == b + c) {
+    while (sssss == 4) {
+        e = b + qw;
+    }
+}

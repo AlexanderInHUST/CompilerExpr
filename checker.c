@@ -159,11 +159,11 @@ void free_check_results_array(check_results_array ** array) {
 }
 
 void print_check_results_array(check_results_array * array) {
-    printf("There exist %d semantics errors!\n\n", array->length);
+    printf("There exist %d semantics errors!\n", array->length);
     for (int i = 0; i < array->length; i++) {
         check_result * current_result = array->results[i];
         printf("The %d error:\n", i + 1);
-        printf("    Error %s happens at line %d with keyword \"%s\"\n\n",
+        printf("    %s happens at line %d with keyword \"%s\"\n",
             ERROR_TYPE_TABLE[current_result->error_type], current_result->line_num, current_result->var_name);
     }
 }

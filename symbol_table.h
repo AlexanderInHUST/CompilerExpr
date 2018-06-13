@@ -26,6 +26,7 @@ typedef struct symbol_table {
     struct symbol_table ** next_tables;
     int next_len;
     int next_size;
+    int tmp_number;
 } symbol_table;
 
 symbol_table * create_symbol_table();

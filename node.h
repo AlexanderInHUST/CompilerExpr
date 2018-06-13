@@ -1,6 +1,8 @@
 #ifndef NODE_H_GUARD
 #define NODE_H_GUARD
 
+#include "TAC.h"
+
 enum node_kind {
     CODE_NODE,
     BLOCK_NODE,
@@ -64,6 +66,13 @@ typedef struct tree_node {
             struct tree_node * child;
         } unary_child;
     };
+
+    TAC_list * codes;
+    TAC_list * side_effect;
+    char place[32];
+    char label[32];
+    char true_label[32];
+    char false_label[32];
 } tree_node;
 
 void display(tree_node * T, int tab_num);

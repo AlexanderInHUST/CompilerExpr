@@ -14,6 +14,7 @@ symbol_table * create_symbol_table() {
     table->next_size = DEFAULT_NEXT_SIZE;
     table->next_len = 0;
     table->next_tables = (symbol_table **) malloc (sizeof(symbol_table *) * table->next_size);
+    table->tmp_number = 0;
     return table;
 }
 
@@ -26,6 +27,7 @@ symbol_table * copy_create_symbol_table(symbol_table * table) {
     photo->next_size = DEFAULT_NEXT_SIZE;
     photo->next_len = 0;
     photo->next_tables = (symbol_table **) malloc (sizeof(symbol_table *) * photo->next_size);
+    photo->tmp_number = 0;
     return photo;
 }
 

@@ -52,14 +52,17 @@ void create_tables(symbol_table * root, int field_level, tree_node * T, int exp_
 		}
 
 		case WHILE_CONDITION_NODE: {
+            check_semantics(T->binary_children.left_child, results, root, field_level);
             create_tables(root, field_level, T->binary_children.right_child, -1, results);
 			break;
 		}
 		case IF_CONDITION_NODE: {
+            check_semantics(T->binary_children.left_child, results, root, field_level);
             create_tables(root, field_level, T->binary_children.right_child, -1, results);
 			break;
 		}
 		case IF_ELSE_CONDITION_NODE: {
+            check_semantics(T->trinary_children.first_child, results, root, field_level);
             create_tables(root, field_level, T->trinary_children.second_child, -1, results);
             create_tables(root, field_level, T->trinary_children.third_child, -1, results);
 			break;

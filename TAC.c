@@ -1,8 +1,9 @@
 
 #include "TAC.h"
 
-TAC * create_TAC(char * op, char * first_value, char * second_value, char * third_value) {
+TAC * create_TAC(int type, char * op, char * first_value, char * second_value, char * third_value) {
     TAC * new_TAC = (TAC *) malloc (sizeof(TAC));
+    new_TAC->type = type;
     strcpy(new_TAC->op, op);
     strcpy(new_TAC->first_value, first_value);
     strcpy(new_TAC->second_value, second_value);
@@ -53,6 +54,10 @@ void print_TAC_list(TAC_list * list) {
     printf("The TAC codes are below:\n");
     for (int i = 0; i < list->length; i++) {
         TAC * tac = list->list[i];
-        printf("(%s, %s, %s, %s)\n", tac->op, tac->first_value, tac->second_value, tac->third_value);
+        if (tac->type == NORMAL_TAC) {
+            printf("(%s, %s, %s, %s)\n", tac->op, tac->first_value, tac->second_value, tac->third_value);
+        } else {
+            printf("%s:\n", tac->op);
+        }
     }
 }

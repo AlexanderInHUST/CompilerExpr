@@ -44,15 +44,15 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             strcpy(T->place, create_new_tmp(INTEGER_EXP, table));
             if (T->complex_op.var_pos == 1) { // a++
                 sprintf(tmp_op, "%c", T->complex_op.op2[0]);
-                TAC * tac = create_TAC(tmp_op, T->complex_op.op1, "0", T->place);
+                TAC * tac = create_TAC(NORMAL_TAC, tmp_op, T->complex_op.op1, "0", T->place);
                 insert_TAC(T->codes, tac);
-                TAC * effect = create_TAC(tmp_op, T->complex_op.op1, "1", T->complex_op.op1);
+                TAC * effect = create_TAC(NORMAL_TAC, tmp_op, T->complex_op.op1, "1", T->complex_op.op1);
                 insert_TAC(T->side_effect, effect);
             } else { // ++a
                 sprintf(tmp_op, "%c", T->complex_op.op1[0]);
-                TAC * tac = create_TAC(tmp_op, T->complex_op.op2, "1", T->place);
+                TAC * tac = create_TAC(NORMAL_TAC, tmp_op, T->complex_op.op2, "1", T->place);
                 insert_TAC(T->codes, tac);
-                TAC * effect = create_TAC(tmp_op, T->complex_op.op2, "1", T->complex_op.op2);
+                TAC * effect = create_TAC(NORMAL_TAC, tmp_op, T->complex_op.op2, "1", T->complex_op.op2);
                 insert_TAC(T->side_effect, effect);
             }
             break;
@@ -66,7 +66,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             append_TAC_list(T->side_effect, T->unary_child.child->side_effect);
             if (strcmp(T->op_name, "-") == 0) {
                 strcpy(T->place, create_new_tmp(T->exp_kind, table));
-                TAC * tac = create_TAC("0", "0", T->unary_child.child->place, T->place);
+                TAC * tac = create_TAC(NORMAL_TAC, "0", "0", T->unary_child.child->place, T->place);
                 insert_TAC(T->codes, tac);
             } else {
                 strcpy(T->place, T->unary_child.child->place);
@@ -86,7 +86,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             append_TAC_list(T->side_effect, T->binary_children.right_child->side_effect);
             if (T->kind == BINARY_OP_NODE) {
                 strcpy(T->place, create_new_tmp(T->exp_kind, table));
-                TAC * tac = create_TAC(T->op_name, T->binary_children.left_child->place, T->binary_children.right_child->place, T->place);
+                TAC * tac = create_TAC(NORMAL_TAC, T->op_name, T->binary_children.left_child->place, T->binary_children.right_child->place, T->place);
                 insert_TAC(T->codes, tac);
             }
             break;
@@ -101,11 +101,11 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             append_TAC_list(T->codes, T->unary_child.child->codes);
             append_TAC_list(T->side_effect, T->unary_child.child->side_effect);
             if (strcmp(T->complex_op.op2, "=") == 0) {
-                TAC * tac = create_TAC(T->complex_op.op2, "", T->unary_child.child->place, T->complex_op.op1);
+                TAC * tac = create_TAC(NORMAL_TAC, T->complex_op.op2, "", T->unary_child.child->place, T->complex_op.op1);
                 insert_TAC(T->codes, tac);
             } else {
                 sprintf(tmp_op, "%c", T->complex_op.op2[0]);
-                TAC * tac = create_TAC(tmp_op, T->complex_op.op1, T->unary_child.child->place, T->complex_op.op1);
+                TAC * tac = create_TAC(NORMAL_TAC, tmp_op, T->complex_op.op1, T->unary_child.child->place, T->complex_op.op1);
                 insert_TAC(T->codes, tac);
             }
             if (T->kind == DATA_ASSIGN_NODE) {
@@ -137,11 +137,11 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             symbol_table * next_table = table->next_tables[get_count_stack(stack)];
             push_count_stack(stack);
             make_up_TACs(T->unary_child.child, next_table, stack); // fix me : cannot change table
-            TAC * start_tac = create_TAC("{", "", "", ""); // todo : for changing table
+            TAC * start_tac = create_TAC(LABEL_TAC, "{", "", "", ""); // todo : for changing table
             insert_TAC(T->codes, start_tac);
             append_TAC_list(T->codes, T->unary_child.child->codes);
             append_TAC_list(T->side_effect, T->unary_child.child->side_effect);
-            TAC * end_tac = create_TAC("}", "", "", ""); // todo : for changing table
+            TAC * end_tac = create_TAC(LABEL_TAC, "}", "", "", ""); // todo : for changing table
             insert_TAC(T->codes, end_tac);
             pull_count_stack(stack);
             next_table->tmp_number = 1;
@@ -166,16 +166,16 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             make_up_TACs(T->binary_children.right_child, table, stack);
             strcpy(T->false_label, create_new_label());            
             strcpy(T->label, create_new_label());
-            TAC * label_tac = create_TAC(T->label, "", "", "");
+            TAC * label_tac = create_TAC(LABEL_TAC, T->label, "", "", "");
             insert_TAC(T->codes, label_tac);
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
             append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
-            TAC * jmp_tac = create_TAC("je", "0", T->binary_children.left_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
-            TAC * back_tac = create_TAC("jmp", "", "", T->label);
+            TAC * back_tac = create_TAC(NORMAL_TAC, "jmp", "", "", T->label);
             insert_TAC(T->codes, back_tac);
-            TAC * dst_tac = create_TAC(T->false_label, "", "", "");
+            TAC * dst_tac = create_TAC(LABEL_TAC, T->false_label, "", "", "");
             insert_TAC(T->codes, dst_tac);
             break;
 		}
@@ -188,10 +188,10 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             strcpy(T->false_label, create_new_label());            
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
             append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
-            TAC * jmp_tac = create_TAC("je", "0", T->binary_children.left_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
-            TAC * dst_tac = create_TAC(T->false_label, "", "", "");
+            TAC * dst_tac = create_TAC(LABEL_TAC, T->false_label, "", "", "");
             insert_TAC(T->codes, dst_tac);
 			break;
 		}
@@ -206,15 +206,15 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             strcpy(T->false_label, create_new_label());          
             append_TAC_list(T->codes, T->trinary_children.first_child->codes); 
             append_TAC_list(T->codes, T->trinary_children.first_child->side_effect);           
-            TAC * jmp_tac = create_TAC("je", "0", T->trinary_children.first_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->trinary_children.first_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->trinary_children.second_child->codes);
-            TAC * exit_tac = create_TAC("jmp", "", "", T->label);
+            TAC * exit_tac = create_TAC(NORMAL_TAC, "jmp", "", "", T->label);
             insert_TAC(T->codes, exit_tac);
-            TAC * false_lab_tac = create_TAC(T->false_label, "", "", "");
+            TAC * false_lab_tac = create_TAC(LABEL_TAC, T->false_label, "", "", "");
             insert_TAC(T->codes, false_lab_tac);
             append_TAC_list(T->codes, T->trinary_children.third_child->codes);
-            TAC * dst_tac = create_TAC(T->label, "", "", "");
+            TAC * dst_tac = create_TAC(LABEL_TAC, T->label, "", "", "");
             insert_TAC(T->codes, dst_tac);
 			break;
 		}

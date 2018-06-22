@@ -170,7 +170,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             insert_TAC(T->codes, label_tac);
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
             append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
-            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->binary_children.left_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "jne", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
             TAC * back_tac = create_TAC(NORMAL_TAC, "jmp", "", "", T->label);
@@ -188,7 +188,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             strcpy(T->false_label, create_new_label());            
             append_TAC_list(T->codes, T->binary_children.left_child->codes);
             append_TAC_list(T->codes, T->binary_children.left_child->side_effect);
-            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->binary_children.left_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "jne", "0", T->binary_children.left_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->binary_children.right_child->codes);
             TAC * dst_tac = create_TAC(LABEL_TAC, T->false_label, "", "", "");
@@ -206,7 +206,7 @@ void make_up_TACs(tree_node * T, symbol_table * table, count_stack * stack) {
             strcpy(T->false_label, create_new_label());          
             append_TAC_list(T->codes, T->trinary_children.first_child->codes); 
             append_TAC_list(T->codes, T->trinary_children.first_child->side_effect);           
-            TAC * jmp_tac = create_TAC(NORMAL_TAC, "je", "0", T->trinary_children.first_child->place, T->false_label);
+            TAC * jmp_tac = create_TAC(NORMAL_TAC, "jne", "0", T->trinary_children.first_child->place, T->false_label);
             insert_TAC(T->codes, jmp_tac);
             append_TAC_list(T->codes, T->trinary_children.second_child->codes);
             TAC * exit_tac = create_TAC(NORMAL_TAC, "jmp", "", "", T->label);

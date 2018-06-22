@@ -148,7 +148,7 @@ if (a == b + c) {
     (+, a, 1, a)
     @_label_1:
     (==, a, 4, #_tmp_3)
-    (je, 0, #_tmp_3, @_label_0)
+    (jne, 0, #_tmp_3, @_label_0)
     {:
     (=, , '3', a)
     (=, , '4', qw)
@@ -157,11 +157,11 @@ if (a == b + c) {
     @_label_0:
     (+, b, c, #_tmp_4)
     (==, a, #_tmp_4, #_tmp_5)
-    (je, 0, #_tmp_5, @_label_7)
+    (jne, 0, #_tmp_5, @_label_7)
     {:
     @_label_3:
     (==, sssss, 4, #_tmp_0)
-    (je, 0, #_tmp_0, @_label_2)
+    (jne, 0, #_tmp_0, @_label_2)
     {:
     (+, b, qw, #_tmp_0)
     (=, , #_tmp_0, e)
@@ -172,10 +172,10 @@ if (a == b + c) {
     (jmp, , , @_label_6)
     @_label_7:
     (==, b, 3, #_tmp_6)
-    (je, 0, #_tmp_6, @_label_5)
+    (jne, 0, #_tmp_6, @_label_5)
     {:
     (==, a, 4, #_tmp_0)
-    (je, 0, #_tmp_0, @_label_4)
+    (jne, 0, #_tmp_0, @_label_4)
     {:
     (+, 2, a, #_tmp_0)
     (=, , #_tmp_0, e)

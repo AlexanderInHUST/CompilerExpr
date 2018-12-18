@@ -1,5 +1,5 @@
 # CompilerExpr
-A very basic compiler
+A very basic interpreter
 ## test.c
 ``` C
 float b, c = 0, e = 5 + a++ / 2.5f;
